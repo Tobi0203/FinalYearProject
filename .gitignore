@@ -1,0 +1,63 @@
+# =====================================
+# ✅ Global Git Ignore for MERN Project
+# =====================================
+
+# ------------------------------
+# Node modules (both frontend + backend)
+# ------------------------------
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# ------------------------------
+# Environment files
+# ------------------------------
+.env
+.env.local
+.env.development
+.env.development.local
+.env.production
+.env.production.local
+.env.test
+.env.test.local
+
+# ------------------------------
+# Build / Dist folders
+# ------------------------------
+build/
+dist/
+frontend/build/
+backend/build/
+
+# ------------------------------
+# Logs
+# ------------------------------
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ------------------------------
+# Uploads / temp folders
+# ------------------------------
+uploads/
+tmp/
+
+# ------------------------------
+# OS & Editor files
+# ------------------------------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ------------------------------
+# Coverage / Testing
+# ------------------------------
+coverage/
+
+# ------------------------------
+# Misc
+# ------------------------------
+.pnp
+.pnp.js
