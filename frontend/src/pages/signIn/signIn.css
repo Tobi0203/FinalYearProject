@@ -1,0 +1,145 @@
+.signinMain{
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #2575fc, #11cbaf);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.signinCont{
+    /* position: relative; */
+    /* background-color: rgb(242, 243, 245); */
+    /* background: transparent; */
+    width: 60%;
+    height: 65%;
+    display: flex;
+    border-radius: 3%;
+    overflow: hidden;
+}
+.signinLeft {
+    width: 50%;
+    height: 100%;
+    /* background: linear-gradient(135deg, #2575fc, #6a11cb); */
+    /* background: transparent; */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8%;
+    text-align: center;
+    box-sizing: border-box;
+}
+.signinLeft h2 {
+    font-size: 160%;
+    margin-bottom: 5%;
+}
+
+.signinLeft p {
+    font-size: 90%;
+}
+.signinRight {
+    width: 50%;
+    height: 100%;
+    /* background-color: burlywood; */
+    /* background: linear-gradient(225deg, #2575fc, #6a11cb); */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.signinForm {
+    width: 75%;
+}
+.signinForm h2{
+    text-align: center;
+    margin-bottom: 3%;
+}
+.inputGroup {
+    width: 100%;
+    margin-bottom: 6%;
+    border-radius: 5px;
+}
+
+.inputGroup label {
+    display: block;
+    font-size: 95%;
+    margin-bottom: 2%;
+}
+
+.inputGroup input {
+    width: 100%;
+    padding: 4%;
+    border-radius: 4%;
+    border: 1px solid #aaa;
+    font-size: 85%;
+}
+.signinBtn {
+    width: 100%;
+    padding: 4%;
+    border-radius: 4%;
+    border: none;
+    background-color: #2575fc;
+    color: white;
+    font-size: 90%;
+    cursor: pointer;
+    margin-top: 4%;
+}
+
+.signinBtn:hover {
+    background-color: #1a5edb;
+}
+.signupLink {
+    margin-top: 6%;
+    font-size: 85%;
+    text-align: center;
+    margin-bottom: 6%;
+}
+
+.signupLinkText,.passwordresetLink{
+    color: #2575fc;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+}
+.signupLinkText:hover{
+    text-decoration: underline;
+}
+
+/* responsive */
+@media (max-width: 900px) {
+    .siginCont {
+        width: 85%;
+        height: 80%;
+        flex-direction: column;
+    }
+
+    .signinLeft{
+        display: none;
+    }
+    .signinRight {
+        width: 100%;
+        height: 100%;
+    }
+    .inputGroup {
+    width: 100%;
+    margin-bottom: 2%;
+}
+
+    .signinForm {
+        width: 75%;
+    }
+    .inputGroup input{
+        width: 100%;
+    }
+    .signupLink {
+    margin-top: 2%;
+    font-size: 90%;
+    text-align: center;
+}
+}
+@media (max-width:768px) {
+    .signinCont{
+        width: 100%;
+    }
+}

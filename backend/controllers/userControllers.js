@@ -6,7 +6,7 @@ const userData=async (req,res)=>{
         return res.json({success:false,message:"user not logged in"});
     }
     try {
-        const existUser=await user.findById(userId);
+        const existUser=await user.findById(userId).select("-password");
         if(!existUser){
             return res.json({success:false,message:"user not found"});
         }
@@ -16,5 +16,20 @@ const userData=async (req,res)=>{
         return res.json({success:false,message:error.message});
     }
 }
+const suggestedUsers=async (req,res)=>{
+    const userId=req.user.id;
+    if(!userId){
+        return res.json({success:false,message:"user not logged in"});
+    }
+    try {
+        const suggUsers=await user.find({_id:{$ne:req.user.id}}).select("-password");
+        if(!suggUsers){
+            return res.json({success:false,message:"no user regestred"});
+        }        
+        return res.json({success:true,users:suggUsers,message:"Users found"});
+    } catch (error) {
+        return res.json({success:false,message:error.message});
+    }
+}
 
-module.exports={userData}
+module.exports={userData,suggestedUsers}
