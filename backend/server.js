@@ -8,6 +8,7 @@ const {connectDB} =require("./db/connectDB.js");
 
 const authRoutes=require("./routes/authRoutes.js");
 const userRoutes = require("./routes/userRoutes.js");
+const postRoutes = require("./routes/postRoutes.js");
 
 const app=express();
 app.use(cors({
@@ -24,6 +25,7 @@ app.get("/",(req,res)=>{
 
 app.use("/auth",authRoutes);
 app.use("/user",userRoutes);
+app.use("/posts",postRoutes)
 
 const PORT=process.env.PORT;
 app.listen(PORT,()=>{

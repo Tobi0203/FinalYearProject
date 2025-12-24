@@ -7,8 +7,8 @@ const authRoutes=express.Router();
 authRoutes.post("/register",register);
 authRoutes.post("/login",login);
 authRoutes.post("/logout",logout);
-authRoutes.post("/sendVerifyOtp",verifyUser,sendVerifyOtp);
-authRoutes.post("/verifyEmail",verifyUser,verifyEmail);
+// authRoutes.post("/sendVerifyOtp",verifyUser,sendVerifyOtp);
+// authRoutes.post("/verifyEmail",verifyUser,verifyEmail);
 authRoutes.post("/sendResetOtp",sendResetOtp);
 authRoutes.post("/passwordReset",passwordReset);
 

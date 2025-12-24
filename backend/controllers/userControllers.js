@@ -31,5 +31,16 @@ const suggestedUsers=async (req,res)=>{
         return res.json({success:false,message:error.message});
     }
 }
+const currentUser=async (req,res)=>{
+    try {
+        const curUser=await user.findById(req.user).select("_id username email profilePic");
+        if(!curUser){
+             return res.json({success:false,message:"user not found"});
+        }
+        return res.json({success:true,message:"current user found",user:curUser})
+    } catch (error) {
+        return res.json({success:false,message:error.message});
+    }
+}
 
-module.exports={userData,suggestedUsers}
+module.exports={userData,suggestedUsers,currentUser};

@@ -213,4 +213,5 @@ const passwordReset = async (req, res) => {
         return res.json({ success: false, message: error.message });
     }
 }
-module.exports = { register, login, logout, sendVerifyOtp, verifyEmail, sendResetOtp, passwordReset };
+module.exports = { register, login, logout, sendResetOtp, passwordReset };
+// sendVerifyOtp, verifyEmail
