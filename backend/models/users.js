@@ -29,49 +29,49 @@ const userSchema = new mongoose.Schema({
     followers: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: "Users",
         },
     ],
 
     following: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: "Users",
         },
     ],
 
     posts: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Post",
+            ref: "Posts",
         },
     ],
 
     likedPosts: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Post",
+            ref: "Posts",
         },
     ],
 
     savedPosts: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Post",
+            ref: "Posts",
         },
     ],
-    verifyOtp: {
-        type: String,
-        default: ''
-    },
-    verifyOtpExpireAt: {
-        type: Number,
-        default: 0
-    },
-    isVerified: {
-        type: Boolean,
-        default: false
-    },
+    // verifyOtp: {
+    //     type: String,
+    //     default: ''
+    // },
+    // verifyOtpExpireAt: {
+    //     type: Number,
+    //     default: 0
+    // },
+    // isVerified: {
+    //     type: Boolean,
+    //     default: false
+    // },
     resetOtp: {
         type: String,
         default: ''
@@ -87,5 +87,5 @@ const userSchema = new mongoose.Schema({
 
 }, { timestamps: true })
 
-const user = mongoose.model("Users", userSchema);
-module.exports = user;
+const Users = mongoose.model("Users", userSchema);
+module.exports = Users;

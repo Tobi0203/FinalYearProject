@@ -1,4 +1,4 @@
-const user = require("../models/users");
+const Users = require("../models/users");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const transporter = require("../utils/transporter");
@@ -8,13 +8,13 @@ const register = async (req, res) => {
     if (!name || !email || !password || !username) {
         return res.json({ success: false, message: "require all feilds" });
     }
-    const emailExist = await user.findOne({ email });
+    const emailExist = await Users.findOne({ email });
     if (emailExist) {
         return res.json({ success: false, message: "email already exist" });
     }
     try {
         const hashPass = await bcryptjs.hash(password, 10);
-        const newUser = new user({ name, username, email, password: hashPass });
+        const newUser = new Users({ name, username, email, password: hashPass });
         const userDet = await newUser.save();
 
         // const token=jwt.sign({id:newUser._id},process.env.JWT_SECRET,{expiresIn:"1d"});
@@ -42,7 +42,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     const { email, password } = req.body;
     try {
-        const exist = await user.findOne({ email });
+        const exist = await Users.findOne({ email });
         if (!exist) {
             return res.json({ success: false, message: "user does not exist" });
         }
@@ -79,7 +79,7 @@ const logout = async (req, res) => {
 // const sendVerifyOtp = async (req, res) => {
 //     try {
 //         const userId = req.user.id;
-//         const existUser = await user.findById(userId);
+//         const existUser = await Users.findById(userId);
 //         if (existUser.isVerified) {
 //             return res.json({ success: false, message: "user already verified" });
 //         }
@@ -110,7 +110,7 @@ const logout = async (req, res) => {
 //         return res.json({ success: false, message: "messing details" })
 //     }
 //     try {
-//         const existUser = await user.findById(userId);
+//         const existUser = await Users.findById(userId);
 //         if (!existUser) {
 //             return res.json({ success: false, message: "user not found" })
 //         }
@@ -137,7 +137,7 @@ const sendResetOtp = async (req, res) => {
         let resetToken;
         // 🔁 First time → email
         if (req.body.email) {
-            User = await user.findOne({ email: req.body.email });
+            User = await Users.findOne({ email: req.body.email });
             if (!User) {
                 return res.json({ success: false, message: "user not found" });
             }
@@ -151,7 +151,7 @@ const sendResetOtp = async (req, res) => {
         // 🔁 Resend → token
         else if (req.body.resetToken) {
             const decoded = jwt.verify(req.body.resetToken, process.env.JWT_SECRET);
-            User = await user.findById(decoded.userId);
+            User = await Users.findById(decoded.userId);
             if (!User) {
                 return res.json({ success: false, message: "user not found" });
             }
@@ -192,7 +192,7 @@ const passwordReset = async (req, res) => {
     }
     try {
         const decoded = jwt.verify(resetToken, process.env.JWT_SECRET);
-        const existUser = await user.findById(decoded.userId);
+        const existUser = await Users.findById(decoded.userId);
         if (!existUser) {
             return res.json({ success: false, message: "user not found" })
         }

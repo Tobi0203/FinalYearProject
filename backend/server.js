@@ -24,7 +24,7 @@ app.get("/",(req,res)=>{
 })
 
 app.use("/auth",authRoutes);
-app.use("/user",userRoutes);
+app.use("/users",userRoutes);
 app.use("/posts",postRoutes)
 
 const PORT=process.env.PORT;

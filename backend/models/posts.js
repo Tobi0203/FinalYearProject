@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Postschema = new mongoose.Schema({
     author: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "Users",
         required: true,
     },
 
@@ -24,14 +24,14 @@ const Postschema = new mongoose.Schema({
     likes: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: "Users",
         },
     ],
 
     saves: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: "Users",
         },
     ],
 
@@ -39,7 +39,7 @@ const Postschema = new mongoose.Schema({
         {
             user: {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "User",
+                ref: "Users",
             },
             text: {
                 type: String,
@@ -54,11 +54,7 @@ const Postschema = new mongoose.Schema({
         },
     ],
 
-    // ===== VISIBILITY =====
-    isPublic: {
-        type: Boolean,
-        default: true,
-    },
+    
 },
     { timestamps: true }
 );
