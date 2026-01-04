@@ -1,13 +1,16 @@
+const Notifications = require("../models/notifications");
 const Posts = require("../models/posts");
 const Users = require("../models/users");
 const { post } = require("../routes/postRoutes");
+const onlineUsers = require("../socket/onlineUsers")
 
 const allPosts = async (req, res) => {
     try {
         const posts = await Posts.find()
             .populate("author", "username profilePic")
+            .populate("comments.user", "username profilePic")
             .sort({ createdAt: -1 });
-        console.log(posts)
+        // console.log(posts)
         if (posts.length === 0) {
             return res.json({ success: false, message: "No post found" });
         }
@@ -22,15 +25,29 @@ const createPost = async (req, res) => {
         if (!req.file) {
             return res.json({ success: false, message: "At least one image or video is required" })
         }
+        const io = req.app.get("io");
 
-        // const mediaUrls = req.files.map((file) => file.path);
-        console.log(req.user.id)
+        const file = req.file;
+
         const post = await Posts.create({
             author: req.user.id,
             caption: req.body.caption,
-            media: [req.file.path],
+            media: [
+                {
+                    url: file.path,              // secure_url
+                    public_id: file.filename,    // Cloudinary public_id
+                    resource_type: file.mimetype.startsWith("video")
+                        ? "video"
+                        : "image",
+                },
+            ],
+        });
+
+        // console.log(post)
+        io.emit("postCreation", {
+            post,
+            userId: req.user.id
         })
-        console.log(post)
 
         return res.json({ success: true, message: "post created successfully" });
     } catch (error) {
@@ -40,15 +57,20 @@ const createPost = async (req, res) => {
 const toggleLike = async (req, res) => {
     const postId = req.params.postId;
     const userId = req.user.id;
-    console.log(req.params)
-    console.log(req.user)
+    const io = req.app.get("io");
 
     try {
         const post = await Posts.findById(postId);
-
         if (!post) {
             return res.json({ success: false, message: "cannot find post" });
         }
+        if (post.author.toString() === userId.toString()) {
+            return res.json({
+                success: false,
+                message: "You cannot like your own post",
+            });
+        }
+
         const alreadyLiked = post.likes.includes(userId);
 
         if (alreadyLiked) {
@@ -56,24 +78,69 @@ const toggleLike = async (req, res) => {
             await post.save();
 
             await Users.findByIdAndUpdate(userId, {
-                $pull: { likedPosts: postId }
-            })
-            return res.json({ success: true, message: "post unliked successfully" })
-        }
-
-        else {
+                $pull: { likedPosts: postId },
+            });
+        } else {
             post.likes.push(userId);
             await post.save();
 
             await Users.findByIdAndUpdate(userId, {
-                $addToSet: { likedPosts: postId }
+                $addToSet: { likedPosts: postId },
             });
+            const currUser = await Users.findById(userId).select("username");
+            const notification = await Notifications.create({
+                sender: userId,
+                receiver: post.author,
+                type: "like",
+                message: `${currUser.username} liked your post`
+            })
+            const targetUser = onlineUsers.get(post.author.toString());
+            if (targetUser) {
+                io.to(targetUser).emit("likeNotification", notification)
+            }
         }
-        return res.json({ success: true, message: "post liked successfully" });
+
+        // 🔥 EMIT AFTER DB UPDATE
+        io.emit("postLikeUpdated", {
+            postId: post._id,
+            likesCount: post.likes.length,
+            actionUserId: userId,
+        });
+
+
+
+        return res.json({
+            success: true,
+            liked: !alreadyLiked, 
+            message: alreadyLiked
+                ? "post unliked successfully"
+                : "post liked successfully",
+        });
     } catch (error) {
-        return res.json({ success: false, message: error.message })
+        return res.json({ success: false, message: error.message });
     }
-}
+};
+const getLikedPosts = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await Users.findById(userId)
+      .populate({
+        path: "likedPosts",
+        populate: {
+          path: "author",
+          select: "username profilePicture",
+        },
+      });
+
+    return res.json({
+      success: true,
+      posts: user.likedPosts,
+    });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
 const tooglesaved = async (req, res) => {
     const userId = req.user.id;
     const postId = req.params.postId;
@@ -90,7 +157,7 @@ const tooglesaved = async (req, res) => {
             await Users.findByIdAndUpdate(userId, {
                 $pull: { savedPosts: postId }
             })
-            return res.json({ success: true, message: "post unsaved" })
+            return res.json({ success: true,saved:false, message: "post unsaved" })
         }
         else {
             post.saves.push(userId);
@@ -99,12 +166,35 @@ const tooglesaved = async (req, res) => {
             await Users.findByIdAndUpdate(userId, {
                 $addToSet: { savedPosts: postId }
             });
-            return res.json({ success: true, message: "post saved" });
+            return res.json({ success: true,saved:true, message: "post saved" });
         }
     } catch (error) {
         return res.json({ success: false, message: error.message })
     }
 }
+
+const getSavedPosts = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await Users.findById(userId)
+      .populate({
+        path: "savedPosts",
+        populate: {
+          path: "author",
+          select: "username profilePicture",
+        },
+      });
+
+    return res.json({
+      success: true,
+      posts: user.savedPosts,
+    });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
 const addComment = async (req, res) => {
     const postId = req.params.postId;
     const userId = req.user.id;
@@ -114,6 +204,7 @@ const addComment = async (req, res) => {
     }
     try {
         const post = await Posts.findById(postId);
+        const userDoc = await Users.findById(userId).select("username profilePicture");
         if (!post) {
             return res.json({ success: false, message: "no comment found" })
         }
@@ -123,12 +214,80 @@ const addComment = async (req, res) => {
         }
         post.comments.push(newComment);
         await post.save();
+        const io = req.app.get("io");
 
+        // 🔥 FEED COMMENT UPDATE (ALL USERS)
+        io.emit("postCommentAdded", {
+            postId,
+            comment: {
+                user: {
+                    _id: userDoc._id,
+                    username: userDoc.username,
+                    profilePicture: userDoc.profilePicture,
+                },
+                text,
+            },
+            actionUserId: userId,
+        });
+        if (post.author.toString() !== userId.toString()) {
+            const notification = await Notifications.create({
+                sender: userId,
+                receiver: post.author,
+                type: "comment",
+                message: `${userDoc.username} commented on your post`,
+            });
+
+            const targetSocket = onlineUsers.get(post.author.toString());
+            if (targetSocket) {
+                io.to(targetSocket).emit("commentNotification", notification);
+            }
+        }
         return res.json({ success: true, message: "comment added successfully", comment: newComment });
     } catch (error) {
         return res.json({ success: false, message: error.message });
     }
 }
+const deleteComment = async (req, res) => {
+    const { postId, commentId } = req.params;
+    const userId = req.user.id;
+
+    try {
+        const post = await Posts.findById(postId);
+        if (!post) {
+            return res.json({ success: false, message: "post not found" });
+        }
+
+        const comment = post.comments.id(commentId);
+        if (!comment) {
+            return res.json({ success: false, message: "comment not found" });
+        }
+
+        if (comment.user.toString() !== userId.toString()) {
+            return res.json({
+                success: false,
+                message: "not authorized to delete this comment",
+            });
+        }
+
+        comment.deleteOne();
+        await post.save();
+
+        const io = req.app.get("io");
+        io.emit("commentDeleted", {
+            postId,
+            commentId,
+            actionUserId: userId
+        })
+        return res.json({
+            success: true,
+            message: "comment deleted successfully",
+            commentId,
+        });
+    } catch (error) {
+        return res.json({ success: false, message: error.message });
+    }
+};
+
 const followingFeed = async (req, res) => {
     const userId = req.user.id;
     try {
@@ -151,6 +310,7 @@ const followingFeed = async (req, res) => {
 const deletePost = async (req, res) => {
     const postId = req.params.postId;
     const userId = req.user.id;
+    const io = req.app.get("io");
     try {
         const post = await Posts.findById(postId);
         if (!post) {
@@ -171,6 +331,15 @@ const deletePost = async (req, res) => {
                 likedPosts: postId,
                 savedPosts: postId
             }
+        })
+        for (const media of post.media) {
+            await cloudinary.uploader.destroy(media.public_id, {
+                resource_type: media.resource_type || "image",
+            });
+        }
+        io.emit("postDelete", {
+            postId,
+            actionUserId: userId,
         })
         return res.json({ success: true, message: "post deleted successfully" })
 
@@ -202,4 +371,5 @@ const editPost = async (req, res) => {
         return res.json({ success: false, message: error.message })
     }
 }
-module.exports = { allPosts, createPost, toggleLike, tooglesaved, addComment, followingFeed, deletePost, editPost };
+
+module.exports = { allPosts, createPost, toggleLike,getLikedPosts, tooglesaved, getSavedPosts, addComment, deleteComment, followingFeed, deletePost, editPost };

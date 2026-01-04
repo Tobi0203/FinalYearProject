@@ -1,5 +1,7 @@
 const Posts = require("../models/posts");
 const Users = require("../models/users");
+const Notifications=require("../models/notifications");
+const onlineUsers = require("../socket/onlineUsers")
 
 const suggestedUsers = async (req, res) => {
     const userId = req.user.id;
@@ -7,11 +9,18 @@ const suggestedUsers = async (req, res) => {
         return res.json({ success: false, message: "user not logged in" });
     }
     try {
-        const suggUsers = await Users.find({ _id: { $ne: req.user.id } }).select("-password");
+        const suggUsers = await Users.find({ _id: { $ne: req.user.id } }).select("username name profilePicture followers ");
+        const userswithfollowstatus = suggUsers.map((u) => ({
+            _id: u._id,
+            username: u.username,
+            name: u.name,
+            profilePicture: u.profilePicture,
+            isFollowing: u.followers.includes(req.user.id),
+        }));
         if (!suggUsers) {
             return res.json({ success: false, message: "no user regestred" });
         }
-        return res.json({ success: true, users: suggUsers, message: "Users found" });
+        return res.json({ success: true, users: userswithfollowstatus, message: "Users found" });
     } catch (error) {
         return res.json({ success: false, message: error.message });
     }
@@ -99,6 +108,19 @@ const toggleFollow = async (req, res) => {
 
             targetUser.followers.push(currentUserId);
             await targetUser.save();
+            const notification=await Notifications.create({
+                sender: currentUserId,
+                receiver: targetUserId,
+                type: "follow",
+                message: `${currentUser.username} started following you`,
+            });
+            const io = req.app.get("io");
+
+            // notify target user
+            const targetSocket = onlineUsers.get(targetUserId.toString());
+            if (targetSocket) {
+                io.to(targetSocket).emit("followUpdate", notification);
+            }
             return res.json({ success: true, message: "followed successfully", follow: true });
         }
 
@@ -120,9 +142,9 @@ const searchUser = async (req, res) => {
             ],
             _id: { $ne: req.user.id },
         }).select("username name profilePicture");
-        return res.json({success:true,users})
+        return res.json({ success: true, users })
     } catch (error) {
-        return res.json({success:false,message:error.message});
+        return res.json({ success: false, message: error.message });
     }
 }
 module.exports = { suggestedUsers, currentUser, getUserProfile, toggleFollow, searchUser };

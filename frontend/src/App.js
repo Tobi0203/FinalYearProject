@@ -9,12 +9,18 @@ import { PasswordReset } from './pages/passwordReset/passwordReset';
 import Landing from './pages/landing/landing';
 import PublicRoute from './routes/publicRoute';
 import PrivateRoute from './routes/privateRoute';
+import Home from './pages/Home/home';
+import Profile from './pages/profile/profile';
+import Saved from './pages/saved/saved';
+import Liked from './pages/liked/liked';
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
+          <Route path='/' element={
+            <PublicRoute><Landing /></PublicRoute>} />
           <Route path='/auth/login' element={
             <PublicRoute>
               <SignIn />
@@ -31,7 +37,25 @@ function App() {
             <PublicRoute>
               <PasswordReset />
             </PublicRoute>} />
-          <Route path='/' element={<Landing />} />
+          <Route path='/home' element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>} />
+          <Route path='/profile/:userId' element={
+            <PrivateRoute>
+              <Profile/>
+            </PrivateRoute>
+          }/>
+          <Route path='/saved' element={
+            <PrivateRoute>
+              <Saved/>
+            </PrivateRoute>
+          }/>
+          <Route path='/Liked' element={
+            <PrivateRoute>
+              <Liked/>
+            </PrivateRoute>
+          }/>
         </Routes>
       </BrowserRouter>
       <ToastContainer

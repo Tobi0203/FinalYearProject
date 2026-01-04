@@ -1,0 +1,53 @@
+.sidebar {
+  background: #111827;            /* dark card */
+  padding: 20px;
+  border-radius: 12px;
+  height: fit-content;
+  border: 1px solid #1f2937;
+}
+
+/* .logo {
+  margin-bottom: 24px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #f8fafc;
+} */
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin-bottom: 16px;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  background: none;
+  border: none;
+
+  color: #cbd5e1;
+  font-weight: 500;
+  font-size: 16px;
+  cursor: pointer;
+
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+
+.navLink:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+.navLink.active {
+  background: #1e40af;
+  color: #ffffff;
+  font-weight: 600;
+}

@@ -1,0 +1,96 @@
+.suggestions {
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 14px;
+  padding: 16px;
+  height: fit-content;
+}
+
+.suggestions-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f8fafc;
+  margin-bottom: 14px;
+}
+
+/* Single user */
+.suggestion-user {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.suggestion-user:last-child {
+  margin-bottom: 0;
+}
+.profileWrapper{
+  position: relative;
+}
+.status-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #111827;
+}
+
+.status-dot.online {
+  background: #22c55e;
+}
+
+.status-dot.offline {
+  background: #0f131b;
+}
+
+/* User info */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+}
+
+.user-info img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #1f2937;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.name {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* Follow button */
+.follow-btn {
+  background: transparent;
+  border: 1px solid #2563eb;
+  color: #2563eb;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.follow-btn:hover {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+/* Empty state */
+.no-suggestions {
+  text-align: center;
+  font-size: 13px;
+  color: #94a3b8;
+}

@@ -1,0 +1,28 @@
+/* Page wrapper */
+.likedCont {
+  min-height: 100vh;
+  background-color: #0f172a;
+  padding: 24px 16px;
+}
+
+/* Centered content area */
+.likedMain {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Page title */
+.likedMain h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #f8fafc;
+  margin-bottom: 16px;
+}
+
+/* Empty state / loading text */
+.likedMain p {
+  color: #94a3b8;
+  text-align: center;
+  margin-top: 40px;
+  font-size: 14px;
+}

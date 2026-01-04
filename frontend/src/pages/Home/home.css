@@ -1,0 +1,22 @@
+.home {
+  display: grid;
+  grid-template-columns: 260px 1fr 300px;
+  gap: 24px;
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #0f172a;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .home {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .home {
+    grid-template-columns: 1fr;
+  }
+}

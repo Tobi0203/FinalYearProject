@@ -13,7 +13,7 @@
     /* background-color: rgb(242, 243, 245); */
     /* background: transparent; */
     width: 60%;
-    height: 65%;
+    height: 80%;
     display: flex;
     border-radius: 3%;
     overflow: hidden;
@@ -67,14 +67,14 @@
 /* input group */
 .inputGroup {
     width: 100%;
-    margin-bottom: 6%;
+    margin-bottom: 4%;
     border-radius: 5px;
 }
 
 .inputGroup label {
     display: block;
     font-size: 95%;
-    margin-bottom: 2%;
+    /* margin-bottom: 2%; */
 }
 
 .inputGroup input {
@@ -95,7 +95,7 @@
     color: white;
     font-size: 90%;
     cursor: pointer;
-    margin-top: 4%;
+    margin-top: 2%;
 }
 
 .signupBtn:hover {
@@ -104,7 +104,7 @@
 
 /* login link */
 .loginLink {
-    margin-top: 6%;
+    margin-top: 4%;
     font-size: 85%;
     text-align: center;
     margin-bottom: 6%;

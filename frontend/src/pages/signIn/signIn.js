@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import "./signIn.css";
 import axiosIns from '../../utils/axiosInstance';
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 export const SignIn = () => {
-    // const navigate=useNavigate();
+    const navigate=useNavigate();
     const [formData, setFormData] = useState({
         "email": "",
         "password": ""
@@ -22,9 +22,9 @@ export const SignIn = () => {
             const res = await axiosIns.post("/auth/login", formData);
             if (res.data.success) {
                 // alert(res.data.message);
-                // navigate("/auth/login")
                 toast.success(res.data.message);
                 console.log(res.data);
+                navigate("/home")
             } else {
                 toast.error(res.data.message || "Registration failed");
             }

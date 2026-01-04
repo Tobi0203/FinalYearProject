@@ -2,6 +2,13 @@ const express=require("express");
 const cors=require("cors");
 const dotenv=require("dotenv");
 const cookieParser=require("cookie-parser");
+const app=express();
+
+const http=require("http");
+const server=http.createServer(app)
+const {initSocket}=require("./socket/index.js")
+const io=initSocket(server)
+
 dotenv.config();
 
 const {connectDB} =require("./db/connectDB.js");
@@ -9,8 +16,9 @@ const {connectDB} =require("./db/connectDB.js");
 const authRoutes=require("./routes/authRoutes.js");
 const userRoutes = require("./routes/userRoutes.js");
 const postRoutes = require("./routes/postRoutes.js");
+const notificationRoutes = require("./routes/notificationRoutes.js");
 
-const app=express();
+app.set("io", io);
 app.use(cors({
   origin: "http://localhost:3000",
   credentials: true
@@ -25,10 +33,13 @@ app.get("/",(req,res)=>{
 
 app.use("/auth",authRoutes);
 app.use("/users",userRoutes);
-app.use("/posts",postRoutes)
+app.use("/posts",postRoutes);
+app.use("/notifications",notificationRoutes)
+
+
 
 const PORT=process.env.PORT;
-app.listen(PORT,()=>{
+server.listen(PORT,()=>{
     connectDB();
     console.log(`server running at port ${PORT}`);
 });

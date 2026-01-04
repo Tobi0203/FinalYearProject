@@ -1,0 +1,188 @@
+/* ================= FEED ================= */
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ================= POST CARD ================= */
+.post-card {
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 14px;
+  padding: 16px 18px;
+  color: #e5e7eb;
+}
+
+/* Username */
+.post-card > strong {
+  display: block;
+  margin-bottom: 10px;
+  color: #f8fafc;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Post Image */
+.post-card img {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 12px 0;
+}
+
+/* Caption */
+.post-card p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #d1d5db;
+  margin-bottom: 12px;
+}
+
+/* ================= POST FOOTER ================= */
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+/* Left icons (Like + Comment) */
+.left-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+/* Right icons (Save + Delete) */
+.right-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+/* ================= LIKE + COMMENT ================= */
+.left-actions span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.left-actions span:hover {
+  color: #38bdf8;
+  transform: scale(1.1);
+}
+
+/* Comment specific */
+.comment-icon:hover {
+  color: #22d3ee;
+}
+
+/* ================= SAVE ICON ================= */
+.saveIcon {
+  font-size: 20px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: transform 0.15s ease, color 0.2s ease;
+}
+
+.saveIcon:hover {
+  transform: scale(1.15);
+  color: #e5e7eb;
+}
+
+.saveIcon.saved {
+  color: #facc15; /* Instagram-style saved color */
+}
+
+/* ================= DELETE ICON ================= */
+.deleteButton {
+  font-size: 20px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.deleteButton:hover {
+  color: #ef4444;
+  transform: scale(1.15);
+}
+
+.deleteButton:active {
+  transform: scale(0.95);
+}
+
+/* ================= COMMENTS ================= */
+.comments-section {
+  margin-top: 8px;
+  height: 220px;
+  position: relative;
+  border-top: 1px solid #1f2937;
+}
+
+.comments-list {
+  overflow-y: auto;
+  height: calc(100% - 45px);
+  padding: 6px;
+}
+
+.comment {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #d1d5db;
+}
+
+/* Delete comment */
+.deleteComment {
+  margin-left: 8px;
+  cursor: pointer;
+  color: #ef4444;
+  font-size: 22px;
+  transition: transform 0.15s ease;
+}
+
+.deleteComment:hover {
+  transform: scale(1.2);
+}
+
+/* ================= COMMENT INPUT ================= */
+.comment-input {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  background: #0b1220;
+}
+
+.comment-input input {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 14px;
+  background: #0c1830;
+  color: #d1d5db;
+  border: none;
+  border-radius: 6px;
+  outline: none;
+}
+
+.comment-input button {
+  padding: 6px 12px;
+  cursor: pointer;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* ================= EMPTY / LOADING ================= */
+.feed > p {
+  color: #94a3b8;
+  text-align: center;
+}

@@ -15,8 +15,19 @@ const Postschema = new mongoose.Schema({
 
     media: [
         {
-            type: String, // image/video URL
-            required: true,
+            url: {
+                type: String,
+                required: true,
+            },
+            public_id: {
+                type: String,
+                required: true,
+            },
+            resource_type: {
+                type: String,
+                enum: ["image", "video"],
+                default: "image",
+            },
         },
     ],
 
@@ -54,7 +65,7 @@ const Postschema = new mongoose.Schema({
         },
     ],
 
-    
+
 },
     { timestamps: true }
 );

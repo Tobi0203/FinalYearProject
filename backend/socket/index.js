@@ -1,0 +1,53 @@
+const { Server } = require("socket.io");
+const onlineUsers = require("./onlineUsers");
+
+const initSocket = (server) => {
+  const io = new Server(server, {
+    cors: {
+      origin: "http://localhost:3000",
+      credentials: true,
+    },
+  });
+
+  io.on("connection", (socket) => {
+    console.log("Socket connected:", socket.id);
+
+    // 🔥 USER COMES ONLINE
+    socket.on("addUser", (userId) => {
+      socket.userId = userId;
+      onlineUsers.set(userId, socket.id);
+
+      // ✅ SEND FULL ONLINE USERS LIST TO THIS USER
+      socket.emit(
+        "onlineUsers",
+        Array.from(onlineUsers.keys())
+      );
+
+      // ✅ NOTIFY OTHERS
+      socket.broadcast.emit("onlineStatus", {
+        userId,
+        isOnline: true,
+      });
+    });
+
+    // 🔥 USER GOES OFFLINE
+    socket.on("disconnect", () => {
+      const userId = socket.userId;
+
+      if (userId) {
+        onlineUsers.delete(userId);
+
+        socket.broadcast.emit("onlineStatus", {
+          userId,
+          isOnline: false,
+        });
+      }
+
+      console.log("Socket disconnected:", socket.id);
+    });
+  });
+
+  return io;
+};
+
+module.exports = { initSocket };
