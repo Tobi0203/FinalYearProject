@@ -19,6 +19,29 @@ const allPosts = async (req, res) => {
         return res.json({ success: false, message: error.message })
     }
 }
+// GET /posts/user/:userId
+const getUserPosts = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const posts = await Posts.find({ author: userId })
+            .populate("author", "username profilePicture")
+            .sort({ createdAt: -1 });
+        if (posts.length === 0) {
+            return res.json({ success: false, message: "No post found" });
+        }
+
+        return res.json({
+            success: true,
+            posts,
+        });
+    } catch (error) {
+        return res.json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 
 const createPost = async (req, res) => {
     try {
@@ -111,7 +134,7 @@ const toggleLike = async (req, res) => {
 
         return res.json({
             success: true,
-            liked: !alreadyLiked, 
+            liked: !alreadyLiked,
             message: alreadyLiked
                 ? "post unliked successfully"
                 : "post liked successfully",
@@ -121,25 +144,25 @@ const toggleLike = async (req, res) => {
     }
 };
 const getLikedPosts = async (req, res) => {
-  try {
-    const userId = req.user.id;
+    try {
+        const userId = req.user.id;
 
-    const user = await Users.findById(userId)
-      .populate({
-        path: "likedPosts",
-        populate: {
-          path: "author",
-          select: "username profilePicture",
-        },
-      });
+        const user = await Users.findById(userId)
+            .populate({
+                path: "likedPosts",
+                populate: {
+                    path: "author",
+                    select: "username profilePicture",
+                },
+            });
 
-    return res.json({
-      success: true,
-      posts: user.likedPosts,
-    });
-  } catch (error) {
-    return res.json({ success: false, message: error.message });
-  }
+        return res.json({
+            success: true,
+            posts: user.likedPosts,
+        });
+    } catch (error) {
+        return res.json({ success: false, message: error.message });
+    }
 };
 const tooglesaved = async (req, res) => {
     const userId = req.user.id;
@@ -157,7 +180,7 @@ const tooglesaved = async (req, res) => {
             await Users.findByIdAndUpdate(userId, {
                 $pull: { savedPosts: postId }
             })
-            return res.json({ success: true,saved:false, message: "post unsaved" })
+            return res.json({ success: true, saved: false, message: "post unsaved" })
         }
         else {
             post.saves.push(userId);
@@ -166,7 +189,7 @@ const tooglesaved = async (req, res) => {
             await Users.findByIdAndUpdate(userId, {
                 $addToSet: { savedPosts: postId }
             });
-            return res.json({ success: true,saved:true, message: "post saved" });
+            return res.json({ success: true, saved: true, message: "post saved" });
         }
     } catch (error) {
         return res.json({ success: false, message: error.message })
@@ -174,25 +197,25 @@ const tooglesaved = async (req, res) => {
 }
 
 const getSavedPosts = async (req, res) => {
-  try {
-    const userId = req.user.id;
+    try {
+        const userId = req.user.id;
 
-    const user = await Users.findById(userId)
-      .populate({
-        path: "savedPosts",
-        populate: {
-          path: "author",
-          select: "username profilePicture",
-        },
-      });
+        const user = await Users.findById(userId)
+            .populate({
+                path: "savedPosts",
+                populate: {
+                    path: "author",
+                    select: "username profilePicture",
+                },
+            });
 
-    return res.json({
-      success: true,
-      posts: user.savedPosts,
-    });
-  } catch (error) {
-    return res.json({ success: false, message: error.message });
-  }
+        return res.json({
+            success: true,
+            posts: user.savedPosts,
+        });
+    } catch (error) {
+        return res.json({ success: false, message: error.message });
+    }
 };
 
 const addComment = async (req, res) => {
@@ -372,4 +395,4 @@ const editPost = async (req, res) => {
     }
 }
 
-module.exports = { allPosts, createPost, toggleLike,getLikedPosts, tooglesaved, getSavedPosts, addComment, deleteComment, followingFeed, deletePost, editPost };
+module.exports = { allPosts, getUserPosts, createPost, toggleLike, getLikedPosts, tooglesaved, getSavedPosts, addComment, deleteComment, followingFeed, deletePost, editPost };

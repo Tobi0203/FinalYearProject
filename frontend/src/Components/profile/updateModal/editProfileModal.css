@@ -1,0 +1,85 @@
+.editModal {
+  width: 400px;
+  background: #18181b;
+  border-radius: 14px;
+  color: white;
+  padding: 16px;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.modalBody input,
+.modalBody textarea {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  background: #262626;
+  border: none;
+  border-radius: 8px;
+  color: white;
+}
+
+.modalBody textarea {
+  resize: none;
+  height: 80px;
+}
+
+.saveBtn {
+  width: 100%;
+  background: #3b82f6;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+.avatarUpload {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.avatarUpload img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid #3b82f6;
+}
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.editModal {
+  background: #111;
+  padding: 20px;
+  border-radius: 12px;
+  width: 400px;
+}
+
+.removePicBtn {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  margin: 6px 0;
+}
+
+.saveBtn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+

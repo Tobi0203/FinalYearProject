@@ -3,9 +3,11 @@ import "./signIn.css";
 import axiosIns from '../../utils/axiosInstance';
 import { Link,useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useAuth } from '../../context/authContext';
 
 export const SignIn = () => {
     const navigate=useNavigate();
+    const {setUser}=useAuth();
     const [formData, setFormData] = useState({
         "email": "",
         "password": ""
@@ -24,6 +26,7 @@ export const SignIn = () => {
                 // alert(res.data.message);
                 toast.success(res.data.message);
                 console.log(res.data);
+                setUser(res.data.user);
                 navigate("/home")
             } else {
                 toast.error(res.data.message || "Registration failed");

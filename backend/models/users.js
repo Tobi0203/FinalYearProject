@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    profilePictureId: {
+        type: String,
+        default: ""
+    },
     bio: {
         type: String,
         default: ""
@@ -39,6 +43,20 @@ const userSchema = new mongoose.Schema({
             ref: "Users",
         },
     ],
+    followRequests: [{           // incoming requests
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users"
+    }],
+
+    sentRequests: [{             // outgoing requests
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users"
+    }],
+
+    isPrivate: {
+        type: Boolean,
+        default: false
+    },
 
     posts: [
         {
@@ -80,9 +98,9 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    resetToken:{
-        type:String,
-        default:''
+    resetToken: {
+        type: String,
+        default: ''
     }
 
 }, { timestamps: true })

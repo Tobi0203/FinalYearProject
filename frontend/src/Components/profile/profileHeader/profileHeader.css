@@ -1,0 +1,92 @@
+.profileHeader {
+  display: flex;
+  gap: 40px;
+  padding: 30px;
+  border-radius: 16px;
+  background: linear-gradient(
+    145deg,
+    rgba(17, 24, 39, 0.95),
+    rgba(9, 14, 26, 0.95)
+  );
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+.profileAvatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.profileInfo {
+  flex: 1;
+  color: #e5e7eb;
+}
+
+.profileTop {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.profileTop h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+.followBtn {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  border: none;
+  padding: 6px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.followBtn:hover {
+  opacity: 0.9;
+}
+
+.editBtn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f9fafb;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.editBtn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.profileStats {
+  display: flex;
+  gap: 25px;
+  margin: 14px 0;
+  font-size: 14px;
+  color: #d1d5db;
+  cursor: pointer;
+}
+
+.profileStats span b {
+  color: #f9fafb;
+}
+
+.profileStats span:hover {
+  text-decoration: underline;
+}
+
+.profileBio {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #d1d5db;
+  max-width: 500px;
+}

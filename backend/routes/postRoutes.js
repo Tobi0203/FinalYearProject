@@ -1,11 +1,12 @@
 const express=require("express");
-const { allPosts, createPost, toggleLike, tooglesaved, addComment, followingFeed, deletePost, editPost, deleteComment, getSavedPosts, getLikedPosts } = require("../controllers/postControllers");
+const { allPosts, createPost, toggleLike, tooglesaved, addComment, followingFeed, deletePost, editPost, deleteComment, getSavedPosts, getLikedPosts, getUserPosts } = require("../controllers/postControllers");
 const { verifyUser } = require("../middileware/verifyUser");
 const upload = require("../utils/multer");
 
 const postRoutes=express.Router();
 
 postRoutes.get("/allPosts",verifyUser,allPosts);
+postRoutes.get("/userPosts/:userId",verifyUser,getUserPosts)
 postRoutes.post("/createPost",verifyUser,upload.single("media"),createPost);
 postRoutes.put("/toggleLike/:postId",verifyUser,toggleLike);
 postRoutes.get("/likedPosts",verifyUser,getLikedPosts);

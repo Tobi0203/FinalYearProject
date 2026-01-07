@@ -1,6 +1,7 @@
 const Posts = require("../models/posts");
 const Users = require("../models/users");
-const Notifications=require("../models/notifications");
+const Notifications = require("../models/notifications");
+const cloudinary=require("../utils/cloudinary")
 const onlineUsers = require("../socket/onlineUsers")
 
 const suggestedUsers = async (req, res) => {
@@ -79,55 +80,179 @@ const getUserProfile = async (req, res) => {
         });
     }
 };
+const getFollowing = async (req, res) => {
+    try {
+        const { userId } = req.params; // ✅ IMPORTANT
+
+        const user = await Users.findById(userId)
+            .populate("following", "username name profilePicture");
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        return res.json({
+            success: true,
+            users: user.following || [],
+        });
+    } catch (error) {
+        console.error("getFollowing:", error.message);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const getFollowers = async (req, res) => {
+    try {
+        const { userId } = req.params; // ✅ IMPORTANT
+
+        const user = await Users.findById(userId)
+            .populate("followers", "username name profilePicture");
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        return res.json({
+            success: true,
+            users: user.followers || [],
+        });
+    } catch (error) {
+        console.error("getFollowers:", error.message);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 
 const toggleFollow = async (req, res) => {
-    try {
-        const targetUserId = req.params.userId;
-        const currentUserId = req.user.id;
+  try {
+    const targetUserId = req.params.userId;
+    const currentUserId = req.user.id;
+    const io = req.app.get("io");
 
-        if (targetUserId === currentUserId) {
-            return res.json({ success: false, message: "Cannot follow yourself" })
-        }
-        const currentUser = await Users.findById(currentUserId);
-        const targetUser = await Users.findById(targetUserId);
-        if (!currentUser || !targetUser) {
-            return res.json({ success: false, message: "user not found" })
-        }
-        const alreadyFollowed = currentUser.following.includes(targetUserId);
-        if (alreadyFollowed) {
-            currentUser.following.pull(targetUserId);
-            await currentUser.save()
-
-            targetUser.followers.pull(currentUserId);
-            await targetUser.save();
-            return res.json({ success: true, message: "unfollwed successfully", follow: false })
-        }
-        else {
-            currentUser.following.push(targetUserId);
-            await currentUser.save();
-
-            targetUser.followers.push(currentUserId);
-            await targetUser.save();
-            const notification=await Notifications.create({
-                sender: currentUserId,
-                receiver: targetUserId,
-                type: "follow",
-                message: `${currentUser.username} started following you`,
-            });
-            const io = req.app.get("io");
-
-            // notify target user
-            const targetSocket = onlineUsers.get(targetUserId.toString());
-            if (targetSocket) {
-                io.to(targetSocket).emit("followUpdate", notification);
-            }
-            return res.json({ success: true, message: "followed successfully", follow: true });
-        }
-
-    } catch (error) {
-        return res.json({ success: false, message: error.message })
+    if (targetUserId === currentUserId) {
+      return res.json({
+        success: false,
+        message: "Cannot follow yourself",
+      });
     }
-}
+
+    const currentUser = await Users.findById(currentUserId);
+    const targetUser = await Users.findById(targetUserId);
+
+    if (!currentUser || !targetUser) {
+      return res.json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const alreadyFollowed = currentUser.following.includes(targetUserId);
+
+    if (alreadyFollowed) {
+      // 🔴 UNFOLLOW
+      currentUser.following.pull(targetUserId);
+      targetUser.followers.pull(currentUserId);
+
+      await currentUser.save();
+      await targetUser.save();
+
+      // 🔥 EMIT FOLLOW UPDATE
+      io.emit("followUpdate", {
+        targetUserId,
+        actionUserId: currentUserId,
+        isFollowing: false,
+      });
+
+      return res.json({
+        success: true,
+        follow: false,
+        message: "Unfollowed successfully",
+      });
+    } else {
+      // 🟢 FOLLOW
+      currentUser.following.push(targetUserId);
+      targetUser.followers.push(currentUserId);
+
+      await currentUser.save();
+      await targetUser.save();
+
+      // 🔔 CREATE NOTIFICATION
+      const notification = await Notifications.create({
+        sender: currentUserId,
+        receiver: targetUserId,
+        type: "follow",
+        message: `${currentUser.username} started following you`,
+      });
+
+      // 🔥 EMIT FOLLOW UPDATE
+      io.emit("followUpdate", {
+        targetUserId,
+        actionUserId: currentUserId,
+        isFollowing: true,
+      });
+
+      // 🔔 SEND NOTIFICATION ONLY TO TARGET USER
+      const targetSocket = onlineUsers.get(targetUserId.toString());
+      if (targetSocket) {
+        io.to(targetSocket).emit("newNotification", notification);
+      }
+
+      return res.json({
+        success: true,
+        follow: true,
+        message: "Followed successfully",
+      });
+    }
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+// controllers/userController.js
+const removeFollower = async (req, res) => {
+    try {
+        const userId = req.user.id;           // profile owner
+        const followerId = req.params.followerId;
+
+        if (userId === followerId) {
+            return res.json({ success: false, message: "Invalid action" });
+        }
+
+        // remove followerId from my followers
+        await Users.findByIdAndUpdate(userId, {
+            $pull: { followers: followerId },
+        });
+
+        // remove me from follower's following
+        await Users.findByIdAndUpdate(followerId, {
+            $pull: { following: userId },
+        });
+
+        return res.json({
+            success: true,
+            message: "Follower removed",
+        });
+    } catch (error) {
+        return res.json({ success: false, message: error.message });
+    }
+};
+
 const searchUser = async (req, res) => {
     try {
         const query = req.query.q;
@@ -147,4 +272,89 @@ const searchUser = async (req, res) => {
         return res.json({ success: false, message: error.message });
     }
 }
-module.exports = { suggestedUsers, currentUser, getUserProfile, toggleFollow, searchUser };
+
+// controllers/userController.js
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { name, username, bio } = req.body;
+
+    // 🔥 STEP 1: Fetch existing user FIRST
+    const existingUser = await Users.findById(userId);
+
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const updateData = { name, username, bio };
+
+    // 🔥 STEP 2: If new image uploaded → delete old image
+    if (req.file) {
+      if (existingUser.profilePictureId) {
+        await cloudinary.uploader.destroy(
+          existingUser.profilePictureId
+        );
+      }
+
+      updateData.profilePicture = req.file.path;
+      updateData.profilePictureId = req.file.filename;
+    }
+
+    // 🔥 STEP 3: Update user
+    const updatedUser = await Users.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).select("-password");
+
+    console.log("✅ UPDATED USER:", updatedUser);
+
+    return res.json({
+      success: true,
+      user: updatedUser,
+    });
+
+  } catch (error) {
+    console.error("❌ UPDATE PROFILE ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const removeProfilePicture = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await Users.findById(userId);
+
+        if (user.profilePictureId) {
+            await cloudinary.uploader.destroy(user.profilePictureId);
+        }
+
+        user.profilePicture = "";
+        user.profilePictureId = "";
+        await user.save();
+
+        return res.json({
+            success: true,
+            message: "Profile picture removed",
+            user,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+
+
+module.exports = { suggestedUsers, currentUser, getUserProfile, toggleFollow, removeFollower, searchUser, getFollowers, getFollowing, updateProfile, removeProfilePicture };
