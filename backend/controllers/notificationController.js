@@ -6,6 +6,7 @@ const getNotifications = async (req, res) => {
 
     const notifications = await Notification.find({
       receiver: userId,
+      isRead: false, 
     })
       .populate("sender", "username profilePicture")
       .sort({ createdAt: -1 });

@@ -1,7 +1,15 @@
 import "./profileHeader.css";
 
-const ProfileHeader = ({ profile, postsCount, isOwnProfile, onFollow, openModal,onEditProfile}) => {
+const ProfileHeader = ({ profile, user, postsCount, isOwnProfile, onFollow, onAccept, onDecline, openModal, onEditProfile }) => {
+  const hasIncomingRequest = user?.followRequests?.some(
+    (r) => (r._id || r).toString() === profile._id
+  );
 
+  const getFollowText = () => {
+    if (user?.following?.includes(profile._id)) return "Unfollow";
+    if (user?.sentRequests?.includes(profile._id)) return "Requested";
+    return "Follow";
+  };
 
 
   return (
@@ -16,11 +24,37 @@ const ProfileHeader = ({ profile, postsCount, isOwnProfile, onFollow, openModal,
         <div className="profileTop">
           <h2>{profile.username}</h2>
 
-          {!isOwnProfile && (
-            <button className="followBtn" onClick={() => onFollow(profile._id)}>
-              {profile.isFollowing ? "Unfollow" : "Follow"}
+          {/* 🔒 INCOMING REQUEST → ACCEPT / DECLINE */}
+          {!isOwnProfile && hasIncomingRequest && (
+            <div className="requestActions">
+              <button
+                className="acceptBtn"
+                onClick={() => onAccept(profile._id)}
+              >
+                Accept
+              </button>
+
+              <button
+                className="declineBtn"
+                onClick={() => onDecline(profile._id)}
+              >
+                Decline
+              </button>
+            </div>
+          )}
+
+          {/* NORMAL FOLLOW FLOW */}
+          {!isOwnProfile && !hasIncomingRequest && (
+            <button
+              className="followBtn"
+              onClick={() => onFollow(profile._id)}
+              disabled={user?.sentRequests?.includes(profile._id)}
+            >
+              {getFollowText()}
             </button>
           )}
+
+
 
           {isOwnProfile && (
             <button className="editBtn" onClick={onEditProfile}>
@@ -36,7 +70,12 @@ const ProfileHeader = ({ profile, postsCount, isOwnProfile, onFollow, openModal,
             <b>{profile.followersCount}</b> followers
           </span>
           <span onClick={() => openModal("following")}>
-            <b>{profile.followingCount}</b> following
+            <b>
+              {isOwnProfile
+                ? user?.following?.length || 0
+                : profile.followingCount}
+            </b>{" "}
+            following
           </span>
         </div>
 

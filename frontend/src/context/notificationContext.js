@@ -29,23 +29,20 @@ export const NotificationProvider = ({ children }) => {
 
   // 🔹 Real-time notifications (ONE unified listener)
   useEffect(() => {
-    if (!user?._id) return;
+  if (!user?._id) return;
 
-    const handleRealtimeNotification = (notification) => {
-      console.log("🔔 Realtime notification:", notification);
-      setNotifications((prev) => [notification, ...prev]);
-    };
+  const handleRealtimeNotification = (notification) => {
+    console.log("🔔 Realtime notification:", notification);
+    setNotifications((prev) => [notification, ...prev]);
+  };
 
-    socket.on("commentNotification", handleRealtimeNotification);
-    socket.on("likeNotification", handleRealtimeNotification);
-    socket.on("followUpdate", handleRealtimeNotification);
+  socket.on("newNotification", handleRealtimeNotification);
 
-    return () => {
-      socket.off("commentNotification", handleRealtimeNotification);
-      socket.off("likeNotification", handleRealtimeNotification);
-      socket.off("followUpdate", handleRealtimeNotification);
-    };
-  }, [user]);
+  return () => {
+    socket.off("newNotification", handleRealtimeNotification);
+  };
+}, [user]);
+
 
   // 🔹 Clear notifications (UI only)
   const clearNotifications = () => {

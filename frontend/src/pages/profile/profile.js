@@ -7,6 +7,7 @@ import "./profile.css"
 
 import ProfileHeader from "../../Components/profile/profileHeader/profileHeader";
 import ProfilePosts from "../../Components/profile/profilePosts/profilePosts";
+import FollowRequests from "../../Components/profile/followRequests/followRequests";
 import ProfileTabs from "../../Components/profile/profileTabs/profileTabs";
 import FollowersModal from "../../Components/profile/followersModal/followersModal";
 import EditProfileModal from "../../Components/profile/updateModal/editProfileModal";
@@ -50,38 +51,44 @@ const Profile = () => {
 
 
 
+    const { setUser } = useAuth();
+
     const handleFollow = async (targetUserId = userId) => {
         try {
-            await axiosIns.put(`/users/toggleFollow/${targetUserId}`);
-            // if (res.data.success) {
+            const res = await axiosIns.put(`/users/toggleFollow/${targetUserId}`);
+            console.log(res.data);
+            if (res.data.status === "requested") {
+                setUser(prev => ({
+                    ...prev,
+                    sentRequests: [...(prev.sentRequests || []), targetUserId],
+                }));
+                setProfile(prev => ({
+                    ...prev,
+                    isFollowing: false,
+                }));
+                return;
+            }
 
-            //     // 👉 If action is for profile header
-            //     if (targetUserId === userId) {
-            //         setProfile((prev) => ({
-            //             ...prev,
-            //             isFollowing: !prev.isFollowing,
-            //             followersCount: prev.isFollowing
-            //                 ? prev.followersCount - 1
-            //                 : prev.followersCount + 1,
-            //         }));
-            //     }
+            if (res.data.follow === true) {
+                setUser(prev => ({
+                    ...prev,
+                    following: [...prev.following, targetUserId],
+                }));
+            }
 
-            //     // 👉 If action is from modal (unfollow)
-            //     else {
-            //         setListUsers((prev) =>
-            //             prev.filter((u) => u._id !== targetUserId)
-            //         );
+            if (res.data.follow === false) {
+                setUser(prev => ({
+                    ...prev,
+                    following: prev.following.filter(id => id !== targetUserId),
+                }));
+            }
 
-            //         setProfile((prev) => ({
-            //             ...prev,
-            //             followingCount: prev.followingCount - 1,
-            //         }));
-            //     }
-            // }
         } catch (error) {
             console.error(error);
         }
     };
+
+
 
     const handleRemoveFollower = (followerId) => {
         setListUsers((prev) => prev.filter((u) => u._id !== followerId));
@@ -108,7 +115,6 @@ const Profile = () => {
     };
 
 
-
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -129,14 +135,11 @@ const Profile = () => {
     useEffect(() => {
         if (!profile?._id || !user?._id) return;
 
-        const handleFollowUpdate = ({
-            targetUserId,
-            actionUserId,
-            isFollowing,
-        }) => {
-            // Someone followed/unfollowed THIS profile
+        const handleFollowUpdate = ({ targetUserId, actionUserId, isFollowing }) => {
+
+            // 1️⃣ Someone followed/unfollowed THIS profile
             if (targetUserId === profile._id) {
-                setProfile((prev) => ({
+                setProfile(prev => ({
                     ...prev,
                     followersCount: isFollowing
                         ? prev.followersCount + 1
@@ -144,12 +147,12 @@ const Profile = () => {
                 }));
             }
 
-            // Logged-in user followed/unfollowed THIS profile
+            // 2️⃣ Logged-in user followed/unfollowed THIS profile
             if (
                 actionUserId === user._id &&
                 targetUserId === profile._id
             ) {
-                setProfile((prev) => ({
+                setProfile(prev => ({
                     ...prev,
                     isFollowing,
                 }));
@@ -159,6 +162,9 @@ const Profile = () => {
         socket.on("followUpdate", handleFollowUpdate);
         return () => socket.off("followUpdate", handleFollowUpdate);
     }, [profile?._id, user?._id]);
+
+
+
 
     useEffect(() => {
         const fetchUserPosts = async () => {
@@ -215,6 +221,63 @@ const Profile = () => {
         setModalType("");
     }, [userId]);
 
+    const acceptRequest = async (requesterId) => {
+        try {
+            const res = await axiosIns.post(
+                `/users/follow/accept/${requesterId}`
+            );
+
+            if (res.data.success) {
+                // remove request
+                setProfile(prev => ({
+                    ...prev,
+                    followRequests: prev.followRequests.filter(
+                        id => id !== requesterId
+                    ),
+                    // followersCount: prev.followersCount + 1, // private user
+                }));
+
+                // 🔥 THIS IS THE FIX
+                setProfile(prev => ({
+                    ...prev,
+                    followingCount: prev.followingCount + 1, // requester
+                    isFollowing: true,
+                }));
+
+                // update auth user
+                setUser(prev => ({
+                    ...prev,
+                    followRequests: (prev.followRequests || []).filter(
+                        u => (u._id || u) !== requesterId
+                    ),
+                    followers: [...(prev.followers || []), requesterId],
+                }));
+            }
+
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const declineRequest = async (requesterId) => {
+        try {
+            const res = await axiosIns.post(
+                `/users/follow/decline/${requesterId}`
+            );
+
+            if (res.data.success) {
+                setUser(prev => ({
+                    ...prev,
+                    followRequests: (prev.followRequests || []).filter(
+                        u => (u._id || u) !== requesterId
+                    ),
+                }));
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
 
 
     if (loading) return <p>Loading profile...</p>;
@@ -224,9 +287,12 @@ const Profile = () => {
         <div className="profile-page">
             <ProfileHeader
                 profile={profile}
+                user={user}
                 postsCount={posts.length}
                 isOwnProfile={user?._id === userId}
                 onFollow={handleFollow}
+                onAccept={acceptRequest}
+                onDecline={declineRequest}
                 openModal={openModal}
                 onEditProfile={() => setShowEditModal(true)}
             />
@@ -238,13 +304,31 @@ const Profile = () => {
                 />
             )}
 
+            {user?._id === userId &&
+                user?.isPrivate &&
+                user?.followRequests?.length > 0 && (
+                    <FollowRequests />
+                )}
 
             <ProfileTabs
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 isOwnProfile={user?._id === userId}
             />
-            {activeTab === "posts" && <ProfilePosts posts={posts} />}
+            {/* 🔒 PRIVATE ACCOUNT POST VISIBILITY */}
+            {activeTab === "posts" && (
+                (!profile.isPrivate ||
+                    profile.isFollowing ||
+                    user?._id === userId) ? (
+                    <ProfilePosts posts={posts} />
+                ) : (
+                    <div className="privateAccountMsg">
+                        <h3>This account is private</h3>
+                        <p>Follow to see their posts.</p>
+                    </div>
+                )
+            )}
+
 
             {activeTab === "saved" && (
                 <ProfilePosts

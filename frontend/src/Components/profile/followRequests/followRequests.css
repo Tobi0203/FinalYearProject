@@ -1,0 +1,55 @@
+.followRequests {
+  margin-top: 20px;
+  padding: 12px;
+  background: #111;
+  border-radius: 8px;
+}
+
+.followRequests h3 {
+  margin-bottom: 10px;
+  color: #fff;
+}
+.requestUser {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.requestAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.requestUsername {
+  font-weight: 500;
+  color: #fff;
+}
+
+
+.requestItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #222;
+}
+
+.requestActions button {
+  margin-left: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.acceptBtn {
+  background: #1db954;
+  color: #fff;
+}
+
+.declineBtn {
+  background: #e0245e;
+  color: #fff;
+}

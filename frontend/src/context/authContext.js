@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
 
     const registerSocketUser = () => {
       socket.emit("addUser", user._id);
-      console.log("✅ Socket user registered:", user._id);
+      // console.log("✅ Socket user registered:", user._id);
     };
 
     // if socket already connected
@@ -54,6 +54,80 @@ export const AuthProvider = ({ children }) => {
     await axiosIns.post("/auth/logout");
     setUser(null);
   };
+  useEffect(() => {
+    if (!user?._id) return;
+
+    const handleFollowRequest = (newUser) => {
+      setUser((prev) => ({
+        ...prev,
+        followRequests: [...(prev.followRequests || []), newUser],
+      }));
+    };
+
+    socket.on("followRequest", handleFollowRequest);
+
+    return () => {
+      socket.off("followRequest", handleFollowRequest);
+    };
+  }, [user?._id]);
+
+  useEffect(() => {
+    if (!user?._id) return;
+
+    const handleFollowRequestAccepted = ({ targetUserId }) => {
+      setUser(prev => ({
+        ...prev,
+        sentRequests: (prev.sentRequests || []).filter(
+          id => id !== targetUserId
+        ),
+        following: [...(prev.following || []), targetUserId],
+      }));
+    };
+
+    socket.on("followRequestAccepted", handleFollowRequestAccepted);
+
+    return () => {
+      socket.off("followRequestAccepted", handleFollowRequestAccepted);
+    };
+  }, [user?._id]);
+
+  useEffect(() => {
+    if (!user?._id) return;
+
+    const handleFollowRequestDeclined = ({ targetUserId }) => {
+      setUser(prev => ({
+        ...prev,
+        sentRequests: (prev.sentRequests || []).filter(
+          id => id !== targetUserId
+        ),
+      }));
+    };
+
+    socket.on("followRequestDeclined", handleFollowRequestDeclined);
+
+    return () => {
+      socket.off("followRequestDeclined", handleFollowRequestDeclined);
+    };
+  }, [user?._id]);
+
+  useEffect(() => {
+    if (!user?._id) return;
+
+    const handleFollowUpdate = ({ targetUserId, actionUserId, isFollowing }) => {
+      if (actionUserId !== user._id) return;
+
+      setUser(prev => ({
+        ...prev,
+        following: isFollowing
+          ? [...(prev.following || []), targetUserId]
+          : prev.following.filter(id => id !== targetUserId),
+      }));
+    };
+
+    socket.on("followUpdate", handleFollowUpdate);
+    return () => socket.off("followUpdate", handleFollowUpdate);
+  }, [user?._id]);
+
 
   return (
     <AuthContext.Provider value={{ user, setUser, loading, logout }}>
