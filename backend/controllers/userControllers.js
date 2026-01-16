@@ -43,9 +43,10 @@ const getUserProfile = async (req, res) => {
   try {
     const profileUserId = req.params.userId;
     const loggedInUserId = req.user.id;
+    // console.log("from get user profile");
 
     const user = await Users.findById(profileUserId)
-      .select("_id username email profilePicture followers following sentRequests followRequests isPrivate");
+      .select("_id name bio username email profilePicture followers following sentRequests followRequests isPrivate");
 
 
     if (!user) {
@@ -65,7 +66,7 @@ const getUserProfile = async (req, res) => {
       posts = await Posts.find({ author: profileUserId })
         .sort({ createdAt: -1 });
     }
-
+    // console.log( "from backend--profile",user)
     return res.json({
       success: true,
       user: {
@@ -460,8 +461,19 @@ const updateProfile = async (req, res) => {
       });
     }
 
-    const updateData = { name, username, bio };
+    const updateData = {};
 
+    if (name !== undefined && name.trim() !== "") {
+      updateData.name = name;
+    }
+
+    if (username !== undefined && username.trim() !== "") {
+      updateData.username = username;
+    }
+
+    if (bio !== undefined) {
+      updateData.bio = bio;
+    }
     // 🔥 STEP 2: If new image uploaded → delete old image
     if (req.file) {
       if (existingUser.profilePictureId) {
@@ -471,7 +483,7 @@ const updateProfile = async (req, res) => {
       }
 
       updateData.profilePicture = req.file.path;
-      updateData.profilePictureId = req.file.filename;
+      updateData.profilePictureId = req.file.public_id;
     }
 
     // 🔥 STEP 3: Update user
@@ -483,9 +495,6 @@ const updateProfile = async (req, res) => {
         runValidators: true,
       }
     ).select("-password");
-
-    console.log("✅ UPDATED USER:", updatedUser);
-
     return res.json({
       success: true,
       user: updatedUser,

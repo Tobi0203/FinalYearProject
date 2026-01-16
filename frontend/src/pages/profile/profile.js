@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import axiosIns from "../../utils/axiosInstance";
 import socket from "../../utils/socket";
 import { useAuth } from "../../context/authContext";
@@ -46,7 +46,19 @@ const Profile = () => {
     };
 
     const handleProfileUpdate = (updatedUser) => {
+        console.log("from handle profile update --profile")
         setProfile(updatedUser);
+    };
+    const navigate = useNavigate();
+
+    const handleMessage = async (receiverId) => {
+        const res = await axiosIns.post("/conversations", {
+            receiverId,
+        });
+
+        navigate("/messages", {
+            state: { conversationId: res.data.conversation._id },
+        });
     };
 
 
@@ -119,6 +131,7 @@ const Profile = () => {
         const fetchProfile = async () => {
             try {
                 const res = await axiosIns.get(`/users/profile/${userId}`);
+                console.log("from frontend --profile", res.data.user)
                 if (res.data.success) {
                     setProfile(res.data.user);
                     setPosts(res.data.posts);
@@ -295,6 +308,7 @@ const Profile = () => {
                 onDecline={declineRequest}
                 openModal={openModal}
                 onEditProfile={() => setShowEditModal(true)}
+                onMessage={handleMessage}
             />
             {showEditModal && (
                 <EditProfileModal

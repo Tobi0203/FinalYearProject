@@ -1,6 +1,6 @@
 const express=require("express");
 const {register, login, logout , sendVerifyOtp, verifyEmail, sendResetOtp, passwordReset} = require("../controllers/authControllers");
-const { verifyUser } = require("../middileware/verifyUser");
+const { verifyUser } = require("../middleware/verifyUser");
 
 const authRoutes=express.Router();
 

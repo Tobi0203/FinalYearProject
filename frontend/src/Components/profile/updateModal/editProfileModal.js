@@ -14,6 +14,7 @@ const EditProfileModal = ({ profile, closeModal, onUpdate }) => {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
+    // console.log("from edit profile",profile)
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -42,11 +43,11 @@ const EditProfileModal = ({ profile, closeModal, onUpdate }) => {
       const res = await axiosIns.put(
         "/users/updateProfile",
         formData,
-        {
-          headers: {
-            "Content-Type": undefined, // 🔥 critical for multer
-          },
-        }
+        // {
+        //   headers: {
+        //     "Content-Type": undefined, // 🔥 critical for multer
+        //   },
+        // }
       );
 
       if (res.data.success) {

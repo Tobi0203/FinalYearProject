@@ -17,6 +17,8 @@ const authRoutes=require("./routes/authRoutes.js");
 const userRoutes = require("./routes/userRoutes.js");
 const postRoutes = require("./routes/postRoutes.js");
 const notificationRoutes = require("./routes/notificationRoutes.js");
+const conversationRoutes = require("./routes/conversationRoutes");
+const messageRoutes = require("./routes/messageRoutes.js");
 
 app.set("io", io);
 app.use(cors({
@@ -35,6 +37,8 @@ app.use("/auth",authRoutes);
 app.use("/users",userRoutes);
 app.use("/posts",postRoutes);
 app.use("/notifications",notificationRoutes)
+app.use("/conversations", conversationRoutes);
+app.use("/messages", messageRoutes);
 
 
 

@@ -1,6 +1,6 @@
 const express = require("express");
 const { suggestedUsers, currentUser, getUserProfile, toggleFollow, searchUser, getFollowing, getFollowers, removeFollower, updateProfile, removeProfilePicture, acceptFollowRequest, declineFollowRequest } = require("../controllers/userControllers");
-const { verifyUser } = require("../middileware/verifyUser");
+const { verifyUser } = require("../middleware/verifyUser");
 const profileUpload = require("../utils/profileUplode");
 
 const userRoutes = express.Router();

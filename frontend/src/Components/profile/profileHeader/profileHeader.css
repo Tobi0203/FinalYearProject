@@ -90,3 +90,27 @@
   color: #d1d5db;
   max-width: 500px;
 }
+.profileActions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Message Button */
+.messageBtn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f9fafb;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.messageBtn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.messageBtn:active {
+  transform: scale(0.96);
+}

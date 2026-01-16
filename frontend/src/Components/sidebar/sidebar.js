@@ -25,6 +25,9 @@ const Sidebar = ({openCreatePost}) => {
                     </button>
                 </li>
                 <li>
+                    <NavLink to="/messages" className="navLink">messages</NavLink>
+                </li>
+                <li>
                     <NavLink to={`/profile/${user?._id}`} className="navLink">Profile</NavLink>
                 </li>
             </ul>

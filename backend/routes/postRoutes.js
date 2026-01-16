@@ -1,6 +1,6 @@
 const express=require("express");
 const { allPosts, createPost, toggleLike, tooglesaved, addComment, followingFeed, deletePost, editPost, deleteComment, getSavedPosts, getLikedPosts, getUserPosts } = require("../controllers/postControllers");
-const { verifyUser } = require("../middileware/verifyUser");
+const { verifyUser } = require("../middleware/verifyUser");
 const upload = require("../utils/multer");
 
 const postRoutes=express.Router();

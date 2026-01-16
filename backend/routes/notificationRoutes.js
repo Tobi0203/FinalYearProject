@@ -1,5 +1,5 @@
 const express=require("express");
-const { verifyUser } = require("../middileware/verifyUser");
+const { verifyUser } = require("../middleware/verifyUser");
 const { getNotifications, markAllAsRead } = require("../controllers/notificationController");
 const notificationRoutes=express.Router();
 

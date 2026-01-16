@@ -13,6 +13,7 @@ import Home from './pages/Home/home';
 import Profile from './pages/profile/profile';
 import Saved from './pages/saved/saved';
 import Liked from './pages/liked/liked';
+import Messages from "./pages/messages/messages";
 
 function App() {
   return (
@@ -54,6 +55,11 @@ function App() {
           <Route path='/Liked' element={
             <PrivateRoute>
               <Liked/>
+            </PrivateRoute>
+          }/>
+          <Route path='/messages' element={
+            <PrivateRoute>
+              <Messages/>
             </PrivateRoute>
           }/>
         </Routes>

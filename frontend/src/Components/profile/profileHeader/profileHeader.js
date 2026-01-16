@@ -1,9 +1,10 @@
 import "./profileHeader.css";
 
-const ProfileHeader = ({ profile, user, postsCount, isOwnProfile, onFollow, onAccept, onDecline, openModal, onEditProfile }) => {
+const ProfileHeader = ({ profile, user, postsCount, isOwnProfile, onFollow, onAccept, onDecline, openModal, onEditProfile, onMessage }) => {
   const hasIncomingRequest = user?.followRequests?.some(
     (r) => (r._id || r).toString() === profile._id
   );
+  const isFollowing = user?.following?.includes(profile._id);
 
   const getFollowText = () => {
     if (user?.following?.includes(profile._id)) return "Unfollow";
@@ -52,6 +53,17 @@ const ProfileHeader = ({ profile, user, postsCount, isOwnProfile, onFollow, onAc
             >
               {getFollowText()}
             </button>
+          )}
+          {/* FOLLOWED → UNFOLLOW + MESSAGE */}
+          {!isOwnProfile && isFollowing && (
+            <div className="profileActions">
+              <button
+                className="messageBtn"
+                onClick={() => onMessage(profile._id)}
+              >
+                Message
+              </button>
+            </div>
           )}
 
 

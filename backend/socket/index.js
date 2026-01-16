@@ -17,6 +17,14 @@ const initSocket = (server) => {
       socket.userId = userId;
       onlineUsers.set(userId, socket.id);
 
+      socket.on("sendMessage", ({ receiverId, message }) => {
+        const receiverSocketId = onlineUsers.get(receiverId);
+
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("receiveMessage", message);
+        }
+      });
+
       // ✅ SEND FULL ONLINE USERS LIST TO THIS USER
       socket.emit(
         "onlineUsers",
