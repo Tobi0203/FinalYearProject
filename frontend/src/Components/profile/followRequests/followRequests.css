@@ -1,14 +1,34 @@
 .followRequests {
   margin-top: 20px;
-  padding: 12px;
-  background: #111;
-  border-radius: 8px;
+  padding: 14px;
+  background: #111827;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .followRequests h3 {
-  margin-bottom: 10px;
-  color: #fff;
+  margin-bottom: 12px;
+  color: #f9fafb;
+  font-size: 16px;
+  font-weight: 600;
 }
+
+/* ========================= */
+/* REQUEST ITEM */
+/* ========================= */
+.requestItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #1f2937;
+}
+
+.requestItem:last-child {
+  border-bottom: none;
+}
+
+/* USER INFO */
 .requestUser {
   display: flex;
   align-items: center;
@@ -20,36 +40,81 @@
   height: 36px;
   border-radius: 50%;
   object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .requestUsername {
   font-weight: 500;
-  color: #fff;
+  color: #f9fafb;
+  font-size: 14px;
 }
 
-
-.requestItem {
+/* ACTION BUTTONS */
+.requestActions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #222;
+  gap: 8px;
 }
 
 .requestActions button {
-  margin-left: 8px;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
 }
 
+/* ACCEPT */
 .acceptBtn {
-  background: #1db954;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
   color: #fff;
 }
 
+.acceptBtn:hover {
+  opacity: 0.9;
+}
+
+/* DECLINE */
 .declineBtn {
-  background: #e0245e;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: #fff;
+}
+
+.declineBtn:hover {
+  opacity: 0.9;
+}
+
+/* ========================= */
+/* MOBILE RESPONSIVE */
+/* ========================= */
+@media (max-width: 480px) {
+  .followRequests {
+    padding: 12px;
+  }
+
+  .requestItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .requestActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .requestActions button {
+    width: 48%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .requestAvatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .requestUsername {
+    font-size: 15px;
+  }
 }

@@ -104,3 +104,18 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.privacySelect {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 10px 0;
+}
+
+.privacySelect select {
+    padding: 8px;
+    border-radius: 6px;
+    background: #1f1f1f;
+    color: white;
+    border: 1px solid #333;
+}

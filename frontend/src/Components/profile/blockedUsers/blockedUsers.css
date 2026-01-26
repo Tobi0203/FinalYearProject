@@ -1,0 +1,43 @@
+.blockedUsers {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.blockedUser {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(15, 23, 42, 0.9);
+  padding: 12px 16px;
+  border-radius: 12px;
+}
+
+.blockedUserInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.blockedUserInfo img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.blockedUserInfo span {
+  color: #f9fafb;
+  font-weight: 500;
+}
+
+.blockedUser button {
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #052e16;
+  font-weight: 600;
+  cursor: pointer;
+}

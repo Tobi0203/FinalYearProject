@@ -12,7 +12,11 @@ const Postschema = new mongoose.Schema({
         trim: true,
         maxlength: 2200,
     },
-
+    privacy: {
+        type: String,
+        enum: ["public", "private"],
+        default: "public"
+    },
     media: [
         {
             url: {

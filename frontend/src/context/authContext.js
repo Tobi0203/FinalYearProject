@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }) => {
         sentRequests: (prev.sentRequests || []).filter(
           id => id !== targetUserId
         ),
-        following: [...(prev.following || []), targetUserId],
+        // following: [...(prev.following || []), targetUserId],
       }));
     };
 

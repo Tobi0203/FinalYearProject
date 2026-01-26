@@ -1,0 +1,41 @@
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-wrapper input {
+  width: 100%;
+  padding: 7px 12px;
+  border-radius: 6px;
+  background: #020617;
+  border: 1px solid #1f2937;
+  color: #e5e7eb;
+}
+
+.search-dropdown {
+  position: absolute;
+  top: 44px;
+  width: 100%;
+  background: #020617;
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  z-index: 1000;
+}
+
+.search-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.search-item:hover {
+  background: #111827;
+}
+
+.search-item img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}

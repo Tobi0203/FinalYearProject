@@ -14,12 +14,28 @@ const messageSchema = new mongoose.Schema(
     },
     text: {
       type: String,
-      required: true,
+      default: "",
+    },
+    post: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Posts",
+      default: null
+    },
+
+    type: {
+      type: String,
+      enum: ["text", "post"],
+      default: "text"
     },
     seen: {
       type: Boolean,
       default: false,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false
+    }
+
   },
   { timestamps: true }
 );

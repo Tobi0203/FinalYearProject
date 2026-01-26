@@ -5,6 +5,7 @@ import { IoIosNotifications } from "react-icons/io";
 import { useAuth } from "../../context/authContext";
 import { useNotifications } from "../../context/notificationContext";
 import { useOnlineStatus } from "../../context/onlineStatusContext";
+import SearchBar from "../searchBar/searchBar";
 
 import axiosIns from "../../utils/axiosInstance";
 import "./navbar.css";
@@ -102,46 +103,8 @@ const Navbar = () => {
             </div>
 
             {/* 🟡 CENTER – SEARCH */}
-            <div className="navbar-center" ref={searchRef}>
-                <input
-                    type="text"
-                    className="navbar-search"
-                    placeholder="Search users..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onFocus={() =>
-                        searchResults.length > 0 && setShowSearch(true)
-                    }
-                />
-
-                {showSearch && (
-                    <div className="search-dropdown">
-                        {searchResults.length > 0 ? (
-                            searchResults.map((u) => (
-                                <div
-                                    key={u._id}
-                                    className="search-item"
-                                    onClick={() => {
-                                        navigate(`/profile/${u._id}`);
-                                        setShowSearch(false);
-                                        setSearchQuery("");
-                                    }}
-                                >
-                                    <img
-                                        src={
-                                            u.profilePicture ||
-                                            "/assets/images/avatar.webp"
-                                        }
-                                        alt="user"
-                                    />
-                                    <span>{u.username}</span>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="no-search">No users found</p>
-                        )}
-                    </div>
-                )}
+            <div className="navbar-center">
+                <SearchBar />
             </div>
 
             {/* 🔴 RIGHT – NOTIFICATIONS + PROFILE */}

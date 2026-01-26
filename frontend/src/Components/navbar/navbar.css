@@ -37,10 +37,11 @@
   flex: 1;
   display: flex;
   justify-content: center;
+  margin: 0% 3%;
 }
 
 .navbar-search {
-  width: 60%;
+  width:60%;
   max-width: 420px;
   padding: 7px 12px;
   border-radius: 6px;
@@ -282,8 +283,11 @@
 }
 
 /* ================= RESPONSIVE ================= */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .navbar-center {
+    display: none;
+  }
+  .logout-btn{
     display: none;
   }
 

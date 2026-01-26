@@ -1,7 +1,9 @@
 import axiosIns from "../../../utils/axiosInstance";
+import { useNavigate } from "react-router-dom";
 import "./profilePosts.css";
 
-const ProfilePosts = ({ posts, onUnsave, isSavedTab,onUnLike,isLikedTab }) => {
+const ProfilePosts = ({ posts, onUnsave, isSavedTab, onUnLike, isLikedTab }) => {
+  const navigate = useNavigate();
   const handleUnsave = async (postId) => {
     try {
       const res = await axiosIns.put(`/posts/toggleSave/${postId}`);
@@ -32,13 +34,16 @@ const ProfilePosts = ({ posts, onUnsave, isSavedTab,onUnLike,isLikedTab }) => {
         if (!image) return null;
 
         return (
-          <div key={post._id} className="postBox">
+          <div key={post._id} className="postBox" onClick={() => navigate(`/post/${post._id}`)}>
             <img src={image} alt="post" />
 
             {isSavedTab && (
               <button
                 className="unsaveBtn"
-                onClick={() => handleUnsave(post._id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleUnsave(post._id);
+                }}
               >
                 Unsave
               </button>
@@ -46,7 +51,10 @@ const ProfilePosts = ({ posts, onUnsave, isSavedTab,onUnLike,isLikedTab }) => {
             {isLikedTab && (
               <button
                 className="unlikeBtn"
-                onClick={() => handleUnLike(post._id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleUnLike(post._id);
+                }}
               >
                 Unlike
               </button>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axiosIns from "../../utils/axiosInstance";
 import { useAuth } from "../../context/authContext";
 import "./feeds.css";
@@ -6,24 +7,34 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { FcLike } from "react-icons/fc";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegCommentDots } from "react-icons/fa6";
-import { MdDeleteOutline } from "react-icons/md";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { PiShareFat } from "react-icons/pi";
+import CreatePost from "../createPost/createPost";
 import socket from "../../utils/socket";
+import ShareModal from "../sharModal/shareModal";
 import { toast } from "react-toastify";
 
 
-const Feeds = ({ refresh, onPostDeleted,externalPosts,onUnsave,onUnlike }) => {
+const Feeds = ({ refresh, onPostDeleted, externalPosts, onUnsave, onUnlike }) => {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const [openCommentsPostId, setOpenCommentsPostId] = useState(null);
   const [commentText, setCommentText] = useState("");
+  const [openMenuPostId, setOpenMenuPostId] = useState(null);
+  const [editingPost, setEditingPost] = useState(null);
+  const [sharePost, setSharePost] = useState(null);
+
 
 
   const fetchPosts = async () => {
     try {
       const res = await axiosIns.get("/posts/allPosts");
+      // console.log(res.data);
       if (res.data.success) {
+        // console.log("form feeds")
         setPosts(res.data.posts);
       } else {
         setPosts([]);
@@ -37,7 +48,7 @@ const Feeds = ({ refresh, onPostDeleted,externalPosts,onUnsave,onUnlike }) => {
 
   const handleLike = async (postId) => {
     try {
-      const res=await axiosIns.put(`/posts/toggleLike/${postId}`);
+      const res = await axiosIns.put(`/posts/toggleLike/${postId}`);
 
       // Update UI without refetch
       setPosts((prevPosts) =>
@@ -52,9 +63,9 @@ const Feeds = ({ refresh, onPostDeleted,externalPosts,onUnsave,onUnlike }) => {
             : post
         )
       );
-       if (externalPosts && res.data.liked === false) {
-      onUnlike?.(postId);
-    }
+      if (externalPosts && res.data.liked === false) {
+        onUnlike?.(postId);
+      }
     } catch (error) {
       console.error("Like toggle error:", error);
     }
@@ -122,14 +133,23 @@ const Feeds = ({ refresh, onPostDeleted,externalPosts,onUnsave,onUnlike }) => {
   const handleDelete = async (postId) => {
     try {
       const res = await axiosIns.delete(`/posts/deletePost/${postId}`);
+
       if (res.data.success) {
         toast.success("Post deleted");
-        onPostDeleted?.() // trigger feed refresh
+
+        // ✅ LOCAL OPTIMISTIC DELETE
+        setPosts((prev) =>
+          prev.filter((post) => post._id !== postId)
+        );
+
+        // ❌ REMOVE THIS
+        onPostDeleted?.();
       }
     } catch (err) {
       toast.error("You are not allowed to delete this post");
     }
   };
+
   useEffect(() => {
     socket.on("postCreation", ({ post, userId }) => {
       setPosts((prev) => [
@@ -142,7 +162,7 @@ const Feeds = ({ refresh, onPostDeleted,externalPosts,onUnsave,onUnlike }) => {
 
   const handleSave = async (postId) => {
     try {
-      const res =await axiosIns.put(`/posts/toggleSave/${postId}`);
+      const res = await axiosIns.put(`/posts/toggleSave/${postId}`);
 
       // optimistic UI update
       setPosts((prevPosts) =>
@@ -158,8 +178,8 @@ const Feeds = ({ refresh, onPostDeleted,externalPosts,onUnsave,onUnlike }) => {
         )
       );
       if (externalPosts && res.data.saved === false) {
-      onUnsave?.(postId);
-    }
+        onUnsave?.(postId);
+      }
     } catch (error) {
       toast.error("Failed to save post");
     }
@@ -167,22 +187,59 @@ const Feeds = ({ refresh, onPostDeleted,externalPosts,onUnsave,onUnlike }) => {
 
   useEffect(() => {
     socket.on("postDelete", ({ postId, actionUserId }) => {
+      if (actionUserId === user?._id) return;
       setPosts((prev) =>
         prev.filter((post) => post._id !== postId)
       );
     })
     return () => socket.off("postDelete")
-  }, [])
+  }, [user?._id])
+  // 🔥 STEP 2: RECEIVE PRIVATE POSTS AFTER FOLLOW (REAL-TIME)
+  useEffect(() => {
+    socket.on("privatePostsOnFollow", ({ posts }) => {
+      if (!posts || posts.length === 0) return;
+
+      setPosts((prev) => {
+        const existingIds = new Set(prev.map((p) => p._id));
+
+        const newPosts = posts.filter(
+          (p) => !existingIds.has(p._id)
+        );
+
+        // add private posts on top
+        return [...newPosts, ...prev];
+      });
+    });
+
+    return () => socket.off("privatePostsOnFollow");
+  }, []);
+  // 🔥 STEP 3: REMOVE PRIVATE POSTS ON UNFOLLOW
+  useEffect(() => {
+    socket.on("removePrivatePosts", ({ targetUserId }) => {
+      setPosts((prev) =>
+        prev.filter(
+          (post) =>
+            !(
+              post.author?._id === targetUserId &&
+              post.privacy === "private"
+            )
+        )
+      );
+    });
+
+    return () => socket.off("removePrivatePosts");
+  }, []);
+
 
   useEffect(() => {
-    if(externalPosts){
+    if (externalPosts) {
       setPosts(externalPosts);
       setLoading(false);
     }
-    else{
+    else {
       fetchPosts()
     }
-  }, [refresh,externalPosts]);
+  }, [refresh, externalPosts]);
 
   useEffect(() => {
     socket.on("postLikeUpdated", ({ postId, likesCount, actionUserId }) => {
@@ -250,28 +307,94 @@ const Feeds = ({ refresh, onPostDeleted,externalPosts,onUnsave,onUnlike }) => {
 
     return () => socket.off("postCommentDeleted");
   }, [user]);
-
-
-
+  useEffect(() => {
+    const closeMenu = () => setOpenMenuPostId(null);
+    window.addEventListener("click", closeMenu);
+    return () => window.removeEventListener("click", closeMenu);
+  }, []);
 
   if (loading) return <p>Loading feed...</p>;
 
   return (
     <div className="feed">
+      {editingPost && (
+        <CreatePost
+          mode="edit"
+          post={editingPost}
+          onClose={() => setEditingPost(null)}
+          onPostUpdated={(updatedPost) => {
+            setPosts((prev) =>
+              prev.map((p) =>
+                p._id === updatedPost._id ? updatedPost : p
+              )
+            );
+          }}
+        />
+      )}
+
       {posts.map((post) => {
         const isLiked = post.likes?.includes(user?._id);
         const isAuthor = post.author?._id === user?._id;
-
-
         return (
           <div className="post-card" key={post._id}>
-            <strong>{post.author?.username}</strong>
+            <div className="post-header">
+              <strong>{post.author?.username}</strong>
 
-            {post.media?.[0] && (
-              <img src={post.media[0].url} alt="post" />
-            )}
+              {isAuthor && (
+                <div className="post-menu-wrapper">
+                  <BsThreeDotsVertical
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenMenuPostId(
+                        openMenuPostId === post._id ? null : post._id
+                      );
+                    }}
+                  />
 
-            <p>{post.caption}</p>
+                  {openMenuPostId === post._id && (
+                    <div className="post-menu">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingPost(post);
+                          setOpenMenuPostId(null);
+
+                        }}
+                      >
+                        Edit
+                      </button>
+
+
+                      <button
+                        className="danger"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(post._id);
+                          setOpenMenuPostId(null);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+
+            <div
+              className="post-click-area"
+              onClick={() => navigate(`/post/${post._id}`)}
+            >
+              {post.media?.[0] && (
+                <img src={post.media[0].url} alt="post" />
+              )}
+
+              <p>{post.caption}</p>
+            </div>
+
+
+            {/* <p>{post.caption}</p> */}
 
             <div className="post-footer">
               <div className="left-actions">
@@ -294,10 +417,24 @@ const Feeds = ({ refresh, onPostDeleted,externalPosts,onUnsave,onUnlike }) => {
                 >
                   <FaRegCommentDots /> {post.comments?.length || 0}
                 </span>
-                {isAuthor && (
-                  <MdDeleteOutline
-                    className="deleteButton"
-                    onClick={() => handleDelete(post._id)}
+                <span
+                  onClick={() => {
+                    if (post.visibility !== "private") {
+                      setSharePost(post);
+                    }
+                  }}
+                  style={{
+                    cursor: post.visibility === "private" ? "not-allowed" : "pointer",
+                    opacity: post.visibility === "private" ? 0.5 : 1
+                  }}
+                >
+                  <PiShareFat />
+                </span>
+
+                {sharePost && (
+                  <ShareModal
+                    post={sharePost}
+                    onClose={() => setSharePost(null)}
                   />
                 )}
               </div>
@@ -357,8 +494,6 @@ const Feeds = ({ refresh, onPostDeleted,externalPosts,onUnsave,onUnlike }) => {
                 </div>
               </div>
             )}
-
-
           </div>
         );
       })}

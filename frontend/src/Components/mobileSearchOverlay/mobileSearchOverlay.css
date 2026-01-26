@@ -1,0 +1,51 @@
+.mobile-search-overlay {
+  position: fixed;
+  inset: 0;
+  background: #020617; /* main app dark bg */
+  z-index: 2000;
+  animation: slideUp 0.25s ease;
+}
+
+/* Header */
+.mobile-search-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #020617;
+  border-bottom: 1px solid #1f2937;
+}
+
+/* Make search input match navbar */
+.mobile-search-header input {
+  background: #020617;
+  border: 1px solid #1f2937;
+  color: #e5e7eb;
+}
+
+.mobile-search-header input::placeholder {
+  color: #94a3b8;
+}
+
+/* Cancel button */
+.close-btn {
+  background: none;
+  border: none;
+  color: #38bdf8; /* accent blue */
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  text-decoration: underline;
+}
+
+/* Animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

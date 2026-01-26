@@ -30,7 +30,7 @@ const getUserConversations = async (req, res) => {
     })
       .populate("members", "username profilePicture")
       .sort({ updatedAt: -1 });
-
+    console.log("form converrsitins",conversations)
     res.json({ success: true, conversations });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

@@ -78,6 +78,13 @@ const userSchema = new mongoose.Schema({
             ref: "Posts",
         },
     ],
+    blockedUsers: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Users"
+        }
+    ],
+
     // verifyOtp: {
     //     type: String,
     //     default: ''

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams,useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axiosIns from "../../utils/axiosInstance";
 import socket from "../../utils/socket";
 import { useAuth } from "../../context/authContext";
@@ -9,6 +9,7 @@ import ProfileHeader from "../../Components/profile/profileHeader/profileHeader"
 import ProfilePosts from "../../Components/profile/profilePosts/profilePosts";
 import FollowRequests from "../../Components/profile/followRequests/followRequests";
 import ProfileTabs from "../../Components/profile/profileTabs/profileTabs";
+import BlockedUsers from "../../Components/profile/blockedUsers/blockedUsers";
 import FollowersModal from "../../Components/profile/followersModal/followersModal";
 import EditProfileModal from "../../Components/profile/updateModal/editProfileModal";
 
@@ -26,6 +27,10 @@ const Profile = () => {
     const [modalType, setModalType] = useState(""); // followers | following
     const [listUsers, setListUsers] = useState([]);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [isBlocked, setIsBlocked] = useState(false);
+    const [blockedUsers, setBlockedUsers] = useState([]);
+    const [showBlockModal, setShowBlockModal] = useState(false);
+
 
     const openModal = async (type) => {
         setModalType(type);
@@ -93,7 +98,14 @@ const Profile = () => {
                     ...prev,
                     following: prev.following.filter(id => id !== targetUserId),
                 }));
+
+                setProfile(prev => ({
+                    ...prev,
+                    isFollowing: false,
+                    followersCount: Math.max(0, prev.followersCount - 1),
+                }));
             }
+
 
         } catch (error) {
             console.error(error);
@@ -126,6 +138,30 @@ const Profile = () => {
         setLikedPosts((prev) => prev.filter((p) => p._id !== postId));
     };
 
+    const handleBlock = async () => {
+        try {
+            const res = await axiosIns.put(`/users/block/${profile._id}`);
+
+            if (res.data.blocked) {
+                setProfile(prev => ({
+                    ...prev,
+                    isFollowing: false,
+                    followersCount: res.data.removedFollower
+                        ? Math.max(0, prev.followersCount - 1)
+                        : prev.followersCount,
+                    followingCount: res.data.removedFollowing
+                        ? Math.max(0, prev.followingCount - 1)
+                        : prev.followingCount,
+                }));
+            }
+
+            setIsBlocked(res.data.blocked);
+            setShowBlockModal(false);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -135,7 +171,9 @@ const Profile = () => {
                 if (res.data.success) {
                     setProfile(res.data.user);
                     setPosts(res.data.posts);
+                    setIsBlocked(res.data.blocked);
                 }
+
             } catch (error) {
                 console.error(error);
             } finally {
@@ -143,7 +181,7 @@ const Profile = () => {
             }
         };
         fetchProfile();
-    }, [userId]);
+    }, [userId, user?._id]);
 
     useEffect(() => {
         if (!profile?._id || !user?._id) return;
@@ -152,6 +190,7 @@ const Profile = () => {
 
             // 1️⃣ Someone followed/unfollowed THIS profile
             if (targetUserId === profile._id) {
+                // someone followed/unfollowed THIS profile
                 setProfile(prev => ({
                     ...prev,
                     followersCount: isFollowing
@@ -160,11 +199,23 @@ const Profile = () => {
                 }));
             }
 
+            if (actionUserId === profile._id) {
+                // THIS profile followed/unfollowed someone
+                setProfile(prev => ({
+                    ...prev,
+                    followingCount: isFollowing
+                        ? prev.followingCount + 1
+                        : prev.followingCount - 1,
+                }));
+            }
+
+
             // 2️⃣ Logged-in user followed/unfollowed THIS profile
             if (
                 actionUserId === user._id &&
                 targetUserId === profile._id
             ) {
+                // Logged-in user followed/unfollowed THIS profile
                 setProfile(prev => ({
                     ...prev,
                     isFollowing,
@@ -228,6 +279,19 @@ const Profile = () => {
         fetchSavedPosts();
     }, [activeTab,]);
     useEffect(() => {
+        if (activeTab !== "blocked") return;
+
+        const fetchBlockedUsers = async () => {
+            const res = await axiosIns.get("/users/blocked");
+            if (res.data.success) {
+                setBlockedUsers(res.data.users);
+            }
+        };
+
+        fetchBlockedUsers();
+    }, [activeTab]);
+
+    useEffect(() => {
         // close followers/following modal when navigating to another profile
         setShowModal(false);
         setListUsers([]);
@@ -241,36 +305,26 @@ const Profile = () => {
             );
 
             if (res.data.success) {
-                // remove request
+                // remove request only
                 setProfile(prev => ({
                     ...prev,
                     followRequests: prev.followRequests.filter(
                         id => id !== requesterId
                     ),
-                    // followersCount: prev.followersCount + 1, // private user
                 }));
 
-                // 🔥 THIS IS THE FIX
-                setProfile(prev => ({
-                    ...prev,
-                    followingCount: prev.followingCount + 1, // requester
-                    isFollowing: true,
-                }));
-
-                // update auth user
                 setUser(prev => ({
                     ...prev,
                     followRequests: (prev.followRequests || []).filter(
                         u => (u._id || u) !== requesterId
                     ),
-                    followers: [...(prev.followers || []), requesterId],
                 }));
             }
-
         } catch (err) {
             console.error(err);
         }
     };
+
 
     const declineRequest = async (requesterId) => {
         try {
@@ -290,11 +344,49 @@ const Profile = () => {
             console.error(err);
         }
     };
+    const handleUnblockFromList = async (blockedUserId) => {
+        await axiosIns.put(`/users/block/${blockedUserId}`);
+        setBlockedUsers(prev =>
+            prev.filter(u => u._id !== blockedUserId)
+        );
+    };
+
 
 
 
     if (loading) return <p>Loading profile...</p>;
     if (!profile) return <p>User not found</p>;
+    if (isBlocked) {
+        return (
+            <div className="profile-page">
+                <div className="blocked-profile">
+                    <h3>User not available</h3>
+                    <p>You blocked this user.</p>
+
+                    <button onClick={() => setShowBlockModal(true)}>
+                        Unblock
+                    </button>
+
+                    {showBlockModal && (
+                        <div className="modal-overlay">
+                            <div className="modal">
+                                <h3>Unblock user?</h3>
+                                <p>They will be able to see your profile again.</p>
+
+                                <button className="danger" onClick={handleBlock}>
+                                    Unblock
+                                </button>
+                                <button onClick={() => setShowBlockModal(false)}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
 
     return (
         <div className="profile-page">
@@ -309,6 +401,7 @@ const Profile = () => {
                 openModal={openModal}
                 onEditProfile={() => setShowEditModal(true)}
                 onMessage={handleMessage}
+                onBlock={() => setShowBlockModal(true)}
             />
             {showEditModal && (
                 <EditProfileModal
@@ -317,6 +410,25 @@ const Profile = () => {
                     onUpdate={handleProfileUpdate}
                 />
             )}
+            {showBlockModal && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h3>Block user?</h3>
+                        <p>
+                            They won’t be able to find your profile, posts, or message you.
+                        </p>
+
+                        <button className="danger" onClick={handleBlock}>
+                            Block
+                        </button>
+
+                        <button onClick={() => setShowBlockModal(false)}>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
+
 
             {user?._id === userId &&
                 user?.isPrivate &&
@@ -357,6 +469,12 @@ const Profile = () => {
                     posts={likedPosts}
                     onUnLike={handleUnlikeFromProfile}
                     isLikedTab />
+            )}
+            {activeTab === "blocked" && (
+                <BlockedUsers
+                    users={blockedUsers}
+                    onUnblock={handleUnblockFromList}
+                />
             )}
 
             {showModal && (

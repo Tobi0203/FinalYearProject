@@ -6,26 +6,42 @@ const onlineUsers = require("../socket/onlineUsers")
 
 const suggestedUsers = async (req, res) => {
   const userId = req.user.id;
+
   if (!userId) {
     return res.json({ success: false, message: "user not logged in" });
   }
+
   try {
-    const suggUsers = await Users.find({ _id: { $ne: req.user.id } }).select("username name profilePicture followers ");
+    // current user
+    const currentUser = await Users.findById(userId).select("blockedUsers");
+
+    const suggUsers = await Users.find({
+      _id: {
+        $ne: userId,
+        $nin: currentUser.blockedUsers // ❌ remove users you blocked
+      },
+      blockedUsers: { $ne: userId } // ❌ remove users who blocked you
+    }).select("username name profilePicture followers");
+
     const userswithfollowstatus = suggUsers.map((u) => ({
       _id: u._id,
       username: u.username,
       name: u.name,
       profilePicture: u.profilePicture,
-      isFollowing: u.followers.includes(req.user.id),
+      isFollowing: u.followers.includes(userId)
     }));
-    if (!suggUsers) {
-      return res.json({ success: false, message: "no user regestred" });
-    }
-    return res.json({ success: true, users: userswithfollowstatus, message: "Users found" });
+
+    return res.json({
+      success: true,
+      users: userswithfollowstatus,
+      message: "Users found"
+    });
+
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
-}
+};
+
 const currentUser = async (req, res) => {
   try {
     const curUser = await Users.findById(req.user.id).select("_id username email profilePicture followers following sentRequests followRequests isPrivate").populate("followRequests", "username profilePicture");
@@ -43,11 +59,14 @@ const getUserProfile = async (req, res) => {
   try {
     const profileUserId = req.params.userId;
     const loggedInUserId = req.user.id;
-    // console.log("from get user profile");
 
+    // Logged-in user (for block check)
+    const currentUser = await Users.findById(loggedInUserId)
+      .select("blockedUsers");
+
+    // Profile user
     const user = await Users.findById(profileUserId)
-      .select("_id name bio username email profilePicture followers following sentRequests followRequests isPrivate");
-
+      .select("_id name bio username email profilePicture followers following sentRequests followRequests isPrivate blockedUsers");
 
     if (!user) {
       return res.json({
@@ -56,19 +75,40 @@ const getUserProfile = async (req, res) => {
       });
     }
 
-    const isFollowing = user.followers.includes(loggedInUserId);
+    /* ================= BLOCK CHECK (BOTH SIDES) ================= */
+    const iBlockedThem = currentUser.blockedUsers.includes(profileUserId);
+    const theyBlockedMe = user.blockedUsers.includes(loggedInUserId);
+
+    if (iBlockedThem || theyBlockedMe) {
+      return res.json({
+        success: true,
+        blocked: true,
+        user: {
+          _id: user._id,
+          username: user.username,
+          profilePicture: user.profilePicture,
+          followersCount: user.followers.length,
+          followingCount: user.following.length,
+          postsCount: 0,
+        },
+        posts: [],
+      });
+    }
+
+    /* ================= FOLLOW / PRIVATE LOGIC ================= */
     const isOwnProfile = profileUserId === loggedInUserId;
+    const isFollowing = user.followers.includes(loggedInUserId);
 
-    // 🔒 PRIVATE ACCOUNT & NOT FOLLOWING
     let posts = [];
-
     if (!user.isPrivate || isFollowing || isOwnProfile) {
       posts = await Posts.find({ author: profileUserId })
         .sort({ createdAt: -1 });
     }
-    // console.log( "from backend--profile",user)
+
+    /* ================= FINAL RESPONSE ================= */
     return res.json({
       success: true,
+      blocked: false,
       user: {
         _id: user._id,
         name: user.name,
@@ -85,13 +125,17 @@ const getUserProfile = async (req, res) => {
       },
       posts,
     });
+
   } catch (error) {
-    return res.json({
+    console.error("getUserProfile error:", error);
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
+
+
 const getFollowing = async (req, res) => {
   try {
     const { userId } = req.params; // ✅ IMPORTANT
@@ -186,6 +230,11 @@ const toggleFollow = async (req, res) => {
         actionUserId: currentUserId,
         isFollowing: false, // 🔥 IMPORTANT
       });
+      // 🔥 TELL FOLLOWER TO REMOVE PRIVATE POSTS
+      io.to(currentUserId.toString()).emit("removePrivatePosts", {
+        targetUserId,
+      });
+
 
       return res.json({
         success: true,
@@ -244,6 +293,13 @@ const toggleFollow = async (req, res) => {
 
     await currentUser.save();
     await targetUser.save();
+    // 🔥 SEND PRIVATE POSTS IMMEDIATELY
+    await emitPrivatePostsToFollower(
+      io,
+      currentUserId, // follower
+      targetUserId   // profile owner
+    );
+
 
     const notification = await Notifications.create({
       sender: currentUserId,
@@ -309,6 +365,13 @@ const acceptFollowRequest = async (req, res) => {
     await currentUser.save();
     await requester.save();
     const requesterSocket = onlineUsers.get(requesterId.toString());
+    // 🔥 SEND PRIVATE POSTS AFTER REQUEST ACCEPT
+    await emitPrivatePostsToFollower(
+      io,
+      requesterId,   // new follower
+      currentUserId  // private account owner
+    );
+
 
     if (requesterSocket) {
       io.to(requesterSocket).emit("followRequestAccepted", {
@@ -394,6 +457,141 @@ const declineFollowRequest = async (req, res) => {
     });
   }
 };
+const blockUser = async (req, res) => {
+  try {
+    const currentUserId = req.user.id;
+    const targetUserId = req.params.userId;
+    const io = req.app.get("io");
+
+    if (currentUserId === targetUserId) {
+      return res.status(400).json({ message: "You cannot block yourself" });
+    }
+
+    const currentUser = await Users.findById(currentUserId);
+    const targetUser = await Users.findById(targetUserId);
+
+    if (!currentUser || !targetUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isBlocked = currentUser.blockedUsers.includes(targetUserId);
+
+    const currentSocketId = onlineUsers.get(currentUserId.toString());
+    const targetSocketId = onlineUsers.get(targetUserId.toString());
+
+    // =========================
+    // 🔓 UNBLOCK
+    // =========================
+    if (isBlocked) {
+      currentUser.blockedUsers.pull(targetUserId);
+      await currentUser.save();
+
+      if (targetSocketId) {
+        io.to(targetSocketId).emit("userUnblocked", { userId: currentUserId });
+      }
+      if (currentSocketId) {
+        io.to(currentSocketId).emit("userUnblocked", { userId: targetUserId });
+      }
+
+      return res.json({ success: true, blocked: false });
+    }
+
+    // =========================
+    // 🔒 BLOCK
+    // =========================
+
+    // 1️⃣ Capture relationship BEFORE removal
+    const currentWasFollowing = currentUser.following.includes(targetUserId);
+    const currentWasFollower = currentUser.followers.includes(targetUserId);
+
+    const targetWasFollowing = targetUser.following.includes(currentUserId);
+    const targetWasFollower = targetUser.followers.includes(currentUserId);
+
+    // 2️⃣ Block
+    currentUser.blockedUsers.push(targetUserId);
+
+    // 3️⃣ Remove follow relations
+    currentUser.following.pull(targetUserId);
+    currentUser.followers.pull(targetUserId);
+    targetUser.following.pull(currentUserId);
+    targetUser.followers.pull(currentUserId);
+
+    await currentUser.save();
+    await targetUser.save();
+
+    // 4️⃣ Emit followUpdate ONLY IF NEEDED
+    if (currentWasFollowing) {
+      io.emit("followUpdate", {
+        targetUserId,
+        actionUserId: currentUserId,
+        isFollowing: false,
+      });
+    }
+
+    if (targetWasFollowing) {
+      io.emit("followUpdate", {
+        targetUserId: currentUserId,
+        actionUserId: targetUserId,
+        isFollowing: false,
+      });
+    }
+
+    // 5️⃣ Block socket events
+    if (targetSocketId) {
+      io.to(targetSocketId).emit("youAreBlocked", {
+        byUserId: currentUserId,
+      });
+    }
+
+    if (currentSocketId) {
+      io.to(currentSocketId).emit("userBlockedByMe", {
+        userId: targetUserId,
+      });
+    }
+
+    return res.json({
+      success: true,
+      blocked: true,
+      removedFollower: currentWasFollower,
+      removedFollowing: currentWasFollowing,
+    });
+
+  } catch (err) {
+    console.error("❌ blockUser error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+const emitPrivatePostsToFollower = async (io, followerId, targetUserId) => {
+  const privatePosts = await Posts.find({
+    author: targetUserId,
+    privacy: "private",
+  })
+    .populate("author", "username profilePic")
+    .sort({ createdAt: -1 });
+
+  if (privatePosts.length > 0) {
+    io.to(followerId.toString()).emit("privatePostsOnFollow", {
+      posts: privatePosts,
+    });
+  }
+};
+
+
+
+const getBlockedUsers = async (req, res) => {
+  try {
+    const user = await Users.findById(req.user.id)
+      .populate("blockedUsers", "username profilePicture");
+
+    res.json({
+      success: true,
+      users: user.blockedUsers
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
+};
 
 
 // controllers/userController.js
@@ -429,21 +627,28 @@ const searchUser = async (req, res) => {
   try {
     const query = req.query.q;
     if (!query) {
-      return res.json({ success: false, message: "search query is required" })
+      return res.json({ success: false, message: "search query is required" });
     }
+
+    const currentUser = await Users.findById(req.user.id)
+      .select("blockedUsers");
 
     const users = await Users.find({
       $or: [
         { username: { $regex: query, $options: "i" } },
         { name: { $regex: query, $options: "i" } },
       ],
-      _id: { $ne: req.user.id },
+      _id: {
+        $nin: [...currentUser.blockedUsers, req.user.id],
+      },
     }).select("username name profilePicture");
-    return res.json({ success: true, users })
+
+    return res.json({ success: true, users });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
-}
+};
+
 
 // controllers/userController.js
 const updateProfile = async (req, res) => {
@@ -537,4 +742,4 @@ const removeProfilePicture = async (req, res) => {
 
 
 
-module.exports = { suggestedUsers, currentUser, getUserProfile, toggleFollow, declineFollowRequest, removeFollower, searchUser, getFollowers, getFollowing, updateProfile, removeProfilePicture, acceptFollowRequest };
+module.exports = { suggestedUsers, currentUser, getUserProfile, toggleFollow, blockUser, getBlockedUsers, declineFollowRequest, removeFollower, searchUser, getFollowers, getFollowing, updateProfile, removeProfilePicture, acceptFollowRequest };

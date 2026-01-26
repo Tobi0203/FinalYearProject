@@ -1,66 +1,99 @@
+/* ========================= */
+/* POSTS GRID */
+/* ========================= */
 .profilePosts {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-top: 25px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 25px;
+  padding-bottom: 80px; /* safe space for mobile bottom bar */
 }
 
+/* ========================= */
+/* POST BOX */
+/* ========================= */
 .postBox {
-    aspect-ratio: 1 / 1;
-    border-radius: 12px;
-    overflow: hidden;
-    cursor: pointer;
-    position: relative;
-    background: linear-gradient(145deg,
-            rgba(17, 24, 39, 0.95),
-            rgba(9, 14, 26, 0.95));
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
 
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: transform 0.2s ease;
+  background: linear-gradient(
+    145deg,
+    rgba(17, 24, 39, 0.95),
+    rgba(9, 14, 26, 0.95)
+  );
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.2s ease;
 }
 
 .postBox:hover {
-    transform: scale(1.02);
+  transform: scale(1.02);
 }
 
 .postBox img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
-.unsaveBtn {
+
+/* ========================= */
+/* ACTION BUTTONS */
+/* ========================= */
+.unsaveBtn,
+.unlikeBtn {
   position: absolute;
   bottom: 10px;
   right: 10px;
-  background: rgba(0, 0, 0, 0.6);
+
+  background: rgba(0, 0, 0, 0.65);
   color: white;
   border: none;
+
   padding: 6px 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 12px;
   cursor: pointer;
+
   opacity: 0;
   transition: opacity 0.2s ease;
 }
 
-.postBox:hover .unsaveBtn {
+/* Show on hover (desktop) */
+.postBox:hover .unsaveBtn,
+.postBox:hover .unlikeBtn {
   opacity: 1;
 }
 
-.unlikeBtn{
-    position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+/* ========================= */
+/* TABLET */
+/* ========================= */
+@media (max-width: 1024px) {
+  .profilePosts {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
-.postBox:hover .unlikeBtn{
+
+/* ========================= */
+/* MOBILE */
+/* ========================= */
+@media (max-width: 480px) {
+  .profilePosts {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  /* Always show buttons on touch devices */
+  .unsaveBtn,
+  .unlikeBtn {
     opacity: 1;
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .postBox {
+    border-radius: 10px;
+  }
 }

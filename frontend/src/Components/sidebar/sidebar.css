@@ -1,17 +1,13 @@
+/* ========================= */
+/* DESKTOP (default) */
+/* ========================= */
+
 .sidebar {
-  background: #111827;            /* dark card */
+  background: #111827;
   padding: 20px;
   border-radius: 12px;
-  height: fit-content;
   border: 1px solid #1f2937;
 }
-
-/* .logo {
-  margin-bottom: 24px;
-  font-size: 22px;
-  font-weight: 700;
-  color: #f8fafc;
-} */
 
 .sidebar ul {
   list-style: none;
@@ -25,9 +21,9 @@
 .navLink {
   display: flex;
   align-items: center;
+  gap: 12px;
+
   width: 100%;
-  padding: 10px 14px;
-  border-radius: 8px;
   text-decoration: none;
   background: none;
   border: none;
@@ -36,18 +32,147 @@
   font-weight: 500;
   font-size: 16px;
   cursor: pointer;
-
-  transition: background 0.2s ease, color 0.2s ease;
 }
 
-
 .navLink:hover {
-  background: #1e293b;
   color: #ffffff;
 }
 
 .navLink.active {
-  background: #1e40af;
-  color: #ffffff;
+  color: #3b82f6;
   font-weight: 600;
+}
+
+/* ========================= */
+/* ICON CONTAINER */
+/* ========================= */
+
+.iconBox {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #cbd5e1;
+  overflow: hidden;
+}
+
+.iconBox svg {
+  font-size: 20px;
+}
+
+/* Profile image */
+.profileAvatarSideBar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.mobile-search {
+  display: none;
+}
+
+.mobile-search-icon {
+  display: none;
+}
+
+/* ========================= */
+/* TABLET + MOBILE */
+/* ========================= */
+@media (max-width: 1024px) {
+  .mobile-search-icon {
+    display: block;
+  }
+
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+    height: 60px;
+    padding: 0;
+
+    border-radius: 0;
+    border-top: 1px solid #1f2937;
+    background: #020617;
+
+    display: flex;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .sidebar ul {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .sidebar li {
+    margin: 0;
+  }
+
+  .navLink {
+    justify-content: center;
+  }
+
+  /* Hide text */
+  .navLink span {
+    display: none;
+  }
+
+  /* Icons only */
+  .iconBox {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+  }
+
+  .iconBox svg {
+    font-size: 18px;
+  }
+
+  .sidebar li:has(.active) .iconBox {
+    color: #3b82f6;
+  }
+
+  /* Hide Saved & Liked */
+  .sidebar li:nth-child(2),
+  .sidebar li:nth-child(3) {
+    display: none;
+  }
+
+  .mobile-search {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+  }
+
+  .mobile-search input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    background: #020617;
+    border: 1px solid #1f2937;
+    color: #e5e7eb;
+  }
+}
+
+/* ========================= */
+/* MOBILE EXTRA POLISH */
+/* ========================= */
+@media (max-width: 768px) {
+  .sidebar {
+    height: 56px;
+  }
+
+  .iconBox svg {
+    font-size: 20px;
+  }
 }

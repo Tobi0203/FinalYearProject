@@ -25,6 +25,12 @@ const ProfileTabs = ({ activeTab, setActiveTab, isOwnProfile }) => {
           >
             Liked
           </button>
+          <button
+            className={activeTab === "blocked" ? "tab active" : "tab"}
+            onClick={() => setActiveTab("blocked")}
+          >
+            Blocked
+          </button>
         </>
       )}
     </div>

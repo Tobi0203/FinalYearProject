@@ -107,39 +107,96 @@
 }
 
 /* responsive */
-@media (max-width: 900px) {
-    .siginCont {
-        width: 85%;
-        height: 80%;
-        flex-direction: column;
+/* Tablets & small laptops */
+@media (max-width: 1024px) {
+    .signinCont {
+        width: 75%;
+        height: auto;
     }
-
-    .signinLeft{
-        display: none;
-    }
-    .signinRight {
-        width: 100%;
-        height: 100%;
-    }
-    .inputGroup {
-    width: 100%;
-    margin-bottom: 2%;
-}
 
     .signinForm {
-        width: 75%;
+        width: 80%;
     }
-    .inputGroup input{
+}
+
+/* Tablets */
+@media (max-width: 900px) {
+    .signinMain {
+        padding: 20px;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .signinCont {
+        width: 90%;
+        height: auto;
+        flex-direction: column;
+        border-radius: 12px;
+    }
+
+    .signinLeft {
+        display: none;
+    }
+
+    .signinRight {
         width: 100%;
+        padding: 40px 0;
     }
+
+    .signinForm {
+        width: 85%;
+    }
+
+    .inputGroup {
+        margin-bottom: 14px;
+    }
+
+    .inputGroup input {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .signinBtn {
+        padding: 12px;
+        font-size: 14px;
+    }
+
     .signupLink {
-    margin-top: 2%;
-    font-size: 90%;
-    text-align: center;
+        margin-top: 15px;
+        font-size: 14px;
+    }
 }
-}
-@media (max-width:768px) {
-    .signinCont{
+
+/* Mobile phones */
+@media (max-width: 480px) {
+    .signinCont {
         width: 100%;
+    }
+
+    .signinForm {
+        width: 100%;
+    }
+
+    .signinForm h2 {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+
+    .inputGroup label {
+        font-size: 13px;
+    }
+
+    .inputGroup input {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .signinBtn {
+        padding: 11px;
+        font-size: 14px;
+    }
+
+    .signupLink {
+        font-size: 13px;
     }
 }

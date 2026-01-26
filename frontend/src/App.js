@@ -14,6 +14,7 @@ import Profile from './pages/profile/profile';
 import Saved from './pages/saved/saved';
 import Liked from './pages/liked/liked';
 import Messages from "./pages/messages/messages";
+import SinglePost from "./pages/post/singlePost";
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
               <Messages/>
             </PrivateRoute>
           }/>
+          <Route path="/post/:postId" element={<SinglePost />} />
         </Routes>
       </BrowserRouter>
       <ToastContainer

@@ -1,6 +1,8 @@
 import "./profileHeader.css";
+import { useAuth } from "../../../context/authContext";
 
-const ProfileHeader = ({ profile, user, postsCount, isOwnProfile, onFollow, onAccept, onDecline, openModal, onEditProfile, onMessage }) => {
+const ProfileHeader = ({ profile, user, postsCount, isOwnProfile, onFollow, onAccept, onDecline, openModal, onEditProfile, onMessage, onBlock }) => {
+  const { logout } = useAuth();
   const hasIncomingRequest = user?.followRequests?.some(
     (r) => (r._id || r).toString() === profile._id
   );
@@ -23,6 +25,7 @@ const ProfileHeader = ({ profile, user, postsCount, isOwnProfile, onFollow, onAc
 
       <div className="profileInfo">
         <div className="profileTop">
+
           <h2>{profile.username}</h2>
 
           {/* 🔒 INCOMING REQUEST → ACCEPT / DECLINE */}
@@ -45,7 +48,7 @@ const ProfileHeader = ({ profile, user, postsCount, isOwnProfile, onFollow, onAc
           )}
 
           {/* NORMAL FOLLOW FLOW */}
-          {!isOwnProfile && !hasIncomingRequest && (
+          {!isOwnProfile && !profile.isBlocked && !hasIncomingRequest && (
             <button
               className="followBtn"
               onClick={() => onFollow(profile._id)}
@@ -54,6 +57,7 @@ const ProfileHeader = ({ profile, user, postsCount, isOwnProfile, onFollow, onAc
               {getFollowText()}
             </button>
           )}
+
           {/* FOLLOWED → UNFOLLOW + MESSAGE */}
           {!isOwnProfile && isFollowing && (
             <div className="profileActions">
@@ -69,8 +73,20 @@ const ProfileHeader = ({ profile, user, postsCount, isOwnProfile, onFollow, onAc
 
 
           {isOwnProfile && (
-            <button className="editBtn" onClick={onEditProfile}>
-              Edit Profile
+            <div className="ownProfileActions">
+              <button className="editBtn" onClick={onEditProfile}>
+                Edit Profile
+              </button>
+
+              <button className="logoutBtn" onClick={logout}>
+                Logout
+              </button>
+            </div>
+          )}
+
+          {!isOwnProfile && (
+            <button className="moreBtn" onClick={onBlock}>
+              ⋯
             </button>
           )}
 
@@ -79,7 +95,12 @@ const ProfileHeader = ({ profile, user, postsCount, isOwnProfile, onFollow, onAc
         <div className="profileStats">
           <span>{postsCount} posts</span>
           <span onClick={() => openModal("followers")}>
-            <b>{profile.followersCount}</b> followers
+            <b>
+              {isOwnProfile
+                ? user?.followers?.length || 0
+                : profile.followersCount}
+            </b> followers
+
           </span>
           <span onClick={() => openModal("following")}>
             <b>

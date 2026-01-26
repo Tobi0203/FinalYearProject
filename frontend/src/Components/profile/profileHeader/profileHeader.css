@@ -3,11 +3,10 @@
   gap: 40px;
   padding: 30px;
   border-radius: 16px;
-  background: linear-gradient(
-    145deg,
-    rgba(17, 24, 39, 0.95),
-    rgba(9, 14, 26, 0.95)
-  );
+
+  background: linear-gradient(145deg,
+      rgba(17, 24, 39, 0.95),
+      rgba(9, 14, 26, 0.95));
 
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
@@ -39,6 +38,7 @@
   color: #f9fafb;
 }
 
+/* FOLLOW BUTTON */
 .followBtn {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: #fff;
@@ -53,6 +53,7 @@
   opacity: 0.9;
 }
 
+/* EDIT BUTTON */
 .editBtn {
   background: rgba(255, 255, 255, 0.08);
   color: #f9fafb;
@@ -67,6 +68,17 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
+/* MORE BUTTON */
+.moreBtn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  margin-left: 10px;
+  color: inherit;
+}
+
+/* PROFILE STATS */
 .profileStats {
   display: flex;
   gap: 25px;
@@ -84,18 +96,21 @@
   text-decoration: underline;
 }
 
+/* BIO */
 .profileBio {
   font-size: 14px;
   line-height: 1.5;
   color: #d1d5db;
   max-width: 500px;
 }
+
+/* PROFILE ACTIONS */
 .profileActions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
-/* Message Button */
+/* MESSAGE BUTTON */
 .messageBtn {
   background: rgba(255, 255, 255, 0.08);
   color: #f9fafb;
@@ -113,4 +128,80 @@
 
 .messageBtn:active {
   transform: scale(0.96);
+}
+
+/* OWN PROFILE ACTIONS */
+.ownProfileActions {
+  display: flex;
+  gap: 10px;
+}
+
+/* LOGOUT BUTTON */
+.logoutBtn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  border: none;
+  padding: 6px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.logoutBtn:hover {
+  opacity: 0.9;
+}
+
+/* ========================= */
+/* MOBILE RESPONSIVE */
+/* ========================= */
+@media (max-width: 768px) {
+
+  .profileHeader {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .profileAvatar {
+    width: 110px;
+    height: 110px;
+  }
+
+  .profileInfo {
+    width: 100%;
+  }
+
+  .profileTop {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .ownProfileActions {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .editBtn,
+  .logoutBtn,
+  .followBtn,
+  .messageBtn {
+    width: 100%;
+    max-width: 260px;
+  }
+
+  .profileStats {
+    justify-content: space-around;
+    width: 100%;
+    gap: 10px;
+    font-size: 13px;
+  }
+
+  .profileBio {
+    max-width: 100%;
+    font-size: 13px;
+  }
 }

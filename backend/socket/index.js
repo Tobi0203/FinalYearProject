@@ -17,6 +17,12 @@ const initSocket = (server) => {
       socket.userId = userId;
       onlineUsers.set(userId, socket.id);
 
+      // 🔥 THIS IS THE MISSING LINE
+      socket.join(userId.toString());
+
+      console.log("User joined room:", userId);
+
+
       socket.on("sendMessage", ({ receiverId, message }) => {
         const receiverSocketId = onlineUsers.get(receiverId);
 
