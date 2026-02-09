@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axiosIns from "../../utils/axiosInstance";
-import socket from "../../utils/socket";
-import { useAuth } from "../../context/authContext";
-import "./profile.css"
+import axiosIns from "../../Utils/AxiosInstance";
+import socket from "../../Utils/Socket";
+import { useAuth } from "../../Context/AuthContext";
+import "./Profile.css"
 
-import ProfileHeader from "../../Components/profile/profileHeader/profileHeader";
-import ProfilePosts from "../../Components/profile/profilePosts/profilePosts";
-import FollowRequests from "../../Components/profile/followRequests/followRequests";
-import ProfileTabs from "../../Components/profile/profileTabs/profileTabs";
-import BlockedUsers from "../../Components/profile/blockedUsers/blockedUsers";
-import FollowersModal from "../../Components/profile/followersModal/followersModal";
-import EditProfileModal from "../../Components/profile/updateModal/editProfileModal";
+import ProfileHeader from "../../Components/Profile/ProfileHeader/ProfileHeader";
+import ProfilePosts from "../../Components/Profile/ProfilePosts/ProfilePosts";
+import FollowRequests from "../../Components/Profile/FollowRequests/FollowRequests";
+import ProfileTabs from "../../Components/Profile/ProfileTabs/ProfileTabs";
+import BlockedUsers from "../../Components/Profile/BlockedUsers/BlockedUsers";
+import FollowersModal from "../../Components/Profile/FollowersModal/FollowersModal";
+import EditProfileModal from "../../Components/Profile/UpdateModal/EditProfileModal";
 
 const Profile = () => {
     const { userId } = useParams();

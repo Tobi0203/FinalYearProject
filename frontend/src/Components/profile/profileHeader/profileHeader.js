@@ -1,5 +1,5 @@
-import "./profileHeader.css";
-import { useAuth } from "../../../context/authContext";
+import "./ProfileHeader.css";
+import { useAuth } from "../../../Context/AuthContext";
 
 const ProfileHeader = ({ profile, user, postsCount, isOwnProfile, onFollow, onAccept, onDecline, openModal, onEditProfile, onMessage, onBlock }) => {
   const { logout } = useAuth();

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import axiosIns from "../utils/axiosInstance";
-import socket from "../utils/socket";
-import { useAuth } from "./authContext";
+import axiosIns from "../Utils/AxiosInstance";
+import socket from "../Utils/Socket";
+import { useAuth } from "./AuthContext";
 
 const NotificationContext = createContext();
 

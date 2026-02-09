@@ -1,18 +1,17 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { useAuth } from "../../context/authContext";
-import SearchBar from "../searchBar/searchBar";
+import { useAuth } from "../../Context/AuthContext";
 import { RiHome4Line } from "react-icons/ri";
 import { RiTelegram2Line } from "react-icons/ri";
 import { FiPlusCircle } from "react-icons/fi";
 import { BiLike } from "react-icons/bi";
 import { IoBookmarkOutline } from "react-icons/io5";
 import { IoSearchSharp } from "react-icons/io5";
-import MobileSearchOverlay from "../mobileSearchOverlay/mobileSearchOverlay";
+import MobileSearchOverlay from "../MobileSearchOverlay/MobileSearchOverlay";
 import { useState } from "react";
 
 
-import "./sidebar.css";
+import "./Sidebar.css";
 
 const Sidebar = ({ openCreatePost }) => {
   const { user } = useAuth();

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link,useNavigate } from "react-router-dom";
-import "./signUp.css";
-import axiosIns from "../../utils/axiosInstance";
+import "./SignUp.css";
+import axiosIns from "../../Utils/AxiosInstance";
 import { toast } from "react-toastify";
 
 export const SignUp = () => {

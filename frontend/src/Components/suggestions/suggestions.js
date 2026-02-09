@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosIns from "../../utils/axiosInstance";
-import { useOnlineStatus } from "../../context/onlineStatusContext";
-import "./suggestions.css";
-import socket from "../../utils/socket";
+import axiosIns from "../../Utils/AxiosInstance";
+import { useOnlineStatus } from "../../Context/OnlineStatusContext";
+import "./Suggestions.css";
+import socket from "../../Utils/Socket";
 
 const Suggestions = () => {
   const [users, setUsers] = useState([]);

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import axiosIns from "../../utils/axiosInstance";
-import { useAuth } from "../../context/authContext";
+import axiosIns from "../../Utils/AxiosInstance";
+import { useAuth } from "../../Context/AuthContext";
 
 import { FaRegHeart, FaRegCommentDots } from "react-icons/fa";
 import { FcLike } from "react-icons/fc";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import { AiOutlineDelete } from "react-icons/ai";
 
-import "./singlePost.css";
+import "./SinglePost.css";
 
 const SinglePost = () => {
   const { postId } = useParams();

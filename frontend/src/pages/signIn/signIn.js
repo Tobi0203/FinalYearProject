@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import "./signIn.css";
-import axiosIns from '../../utils/axiosInstance';
+import "./SignIn.css";
+import axiosIns from '../../Utils/AxiosInstance';
 import { Link,useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useAuth } from '../../context/authContext';
+import { useAuth } from '../../Context/AuthContext';
 
 export const SignIn = () => {
     const navigate=useNavigate();

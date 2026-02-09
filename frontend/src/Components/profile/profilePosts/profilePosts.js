@@ -1,6 +1,6 @@
-import axiosIns from "../../../utils/axiosInstance";
+import axiosIns from "../../../Utils/AxiosInstance";
 import { useNavigate } from "react-router-dom";
-import "./profilePosts.css";
+import "./ProfilePosts.css";
 
 const ProfilePosts = ({ posts, onUnsave, isSavedTab, onUnLike, isLikedTab }) => {
   const navigate = useNavigate();

@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoIosNotifications } from "react-icons/io";
 
-import { useAuth } from "../../context/authContext";
-import { useNotifications } from "../../context/notificationContext";
-import { useOnlineStatus } from "../../context/onlineStatusContext";
-import SearchBar from "../searchBar/searchBar";
+import { useAuth } from "../../Context/AuthContext";
+import { useNotifications } from "../../Context/NotificationContext";
+import { useOnlineStatus } from "../../Context/OnlineStatusContext";
+import SearchBar from "../SearchBar/SearchBar";
 
-import axiosIns from "../../utils/axiosInstance";
-import "./navbar.css";
+import axiosIns from "../../Utils/AxiosInstance";
+import "./Navbar.css";
 
 const Navbar = () => {
     const { user, logout } = useAuth();

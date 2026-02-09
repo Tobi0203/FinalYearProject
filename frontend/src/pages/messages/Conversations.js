@@ -1,8 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
-import axiosIns from "../../utils/axiosInstance";
-import { useAuth } from "../../context/authContext";
-import { useOnlineStatus } from "../../context/onlineStatusContext";
-import socket from "../../utils/socket";
+import axiosIns from "../../Utils/AxiosInstance";
+import { useAuth } from "../../Context/AuthContext";
+import { useOnlineStatus } from "../../Context/OnlineStatusContext";
+import socket from "../../Utils/Socket";
 export default function Conversations({ setCurrentChat, autoOpenConversationId }) {
   const [conversations, setConversations] = useState([]);
   const [search, setSearch] = useState("");

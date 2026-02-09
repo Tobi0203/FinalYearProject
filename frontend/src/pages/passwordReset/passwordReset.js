@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import {  useNavigate } from "react-router-dom";
-import axiosIns from '../../utils/axiosInstance';
+import axiosIns from '../../Utils/AxiosInstance';
 import { toast } from 'react-toastify';
-import "./passwordReset.css"
+import "./PasswordReset.css"
 
 export const PasswordReset = () => {
     const navigate = useNavigate();

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosIns from "../../utils/axiosInstance";
-import { useAuth } from "../../context/authContext";
-import "./feeds.css";
+import axiosIns from "../../Utils/AxiosInstance";
+import { useAuth } from "../../Context/AuthContext";
+import "./Feeds.css";
 import { AiOutlineDelete } from "react-icons/ai";
 import { FcLike } from "react-icons/fc";
 import { FaRegHeart } from "react-icons/fa";
@@ -10,11 +10,10 @@ import { FaRegCommentDots } from "react-icons/fa6";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { PiShareFat } from "react-icons/pi";
-import CreatePost from "../createPost/createPost";
-import socket from "../../utils/socket";
-import ShareModal from "../sharModal/shareModal";
+import CreatePost from "../CreatePost/CreatePost";
+import ShareModal from "../ShareModal/ShareModal";
+import socket from "../../Utils/Socket"
 import { toast } from "react-toastify";
-
 
 const Feeds = ({ refresh, onPostDeleted, externalPosts, onUnsave, onUnlike }) => {
   const navigate = useNavigate();

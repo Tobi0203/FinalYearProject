@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
-import "./followersModal.css";
-import axiosIns from "../../../utils/axiosInstance";
+import "./FollowersModal.css";
+import axiosIns from "../../../Utils/AxiosInstance";
 import { useNavigate } from "react-router-dom";
 
 const FollowersModal = ({

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import axiosIns from "../../utils/axiosInstance";
-import Feeds from "../../Components/feeds/feeds";
-import HomeLayout from "../homeLayout/homeLayout";
+import axiosIns from "../../Utils/AxiosInstance";
+import Feeds from "../../Components/Feeds/Feeds";
+import HomeLayout from "../HomeLayout/HomeLayout";
 
 export default function Liked() {
   const [likedPosts, setLikedPosts] = useState([]);

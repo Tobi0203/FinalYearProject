@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import SearchBar from "../searchBar/searchBar";
+import SearchBar from "../SearchBar/SearchBar";
 import { IoClose } from "react-icons/io5";
-import "./mobileSearchOverlay.css";
+import "./MobileSearchOverlay.css";
 
 const MobileSearchOverlay = ({ open, onClose }) => {
   useEffect(() => {

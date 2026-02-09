@@ -1,4 +1,4 @@
-import "./blockedUsers.css";
+import "./BlockedUsers.css";
 
 export default function BlockedUsers({ users, onUnblock }) {
   return (

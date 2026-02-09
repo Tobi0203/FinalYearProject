@@ -1,9 +1,9 @@
 // src/pages/messages/ChatBox.jsx
 import { useEffect, useState, useRef } from "react";
-import axiosIns from "../../utils/axiosInstance";
-import Message from "./message";
-import { useAuth } from "../../context/authContext";
-import socket from "../../utils/socket";
+import axiosIns from "../../Utils/AxiosInstance";
+import Message from "./Message";
+import { useAuth } from "../../Context/AuthContext";
+import socket from "../../Utils/Socket";
 
 export default function ChatBox({ currentChat, onBack, isMobile }) {
   const [messages, setMessages] = useState([]);

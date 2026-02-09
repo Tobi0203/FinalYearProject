@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosIns from "../../utils/axiosInstance";
-import "./searchBar.css";
+import axiosIns from "../../Utils/AxiosInstance";
+import "./SearchBar.css";
 
 const SearchBar = ({ mobile = false, autoFocus = false }) => {
   const [query, setQuery] = useState("");

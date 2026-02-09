@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axiosIns from "../../../utils/axiosInstance";
-import "./editProfileModal.css";
+import axiosIns from "../../../Utils/AxiosInstance";
+import "./EditProfileModal.css";
 
 const EditProfileModal = ({ profile, closeModal, onUpdate }) => {
   const [form, setForm] = useState({

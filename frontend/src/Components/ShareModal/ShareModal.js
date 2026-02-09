@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosIns from "../../utils/axiosInstance";
-import { useAuth } from "../../context/authContext";
-import "./shareModal.css";
+import axiosIns from "../../Utils/AxiosInstance";
+import { useAuth } from "../../Context/AuthContext";
+import "./ShareModal.css";
 
 export default function ShareModal({ post, onClose }) {
     const navigate = useNavigate();

@@ -3,9 +3,9 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Conversations from "./Conversations";
 import ChatBox from "./ChatBox";
-import socket from "../../utils/socket";
-import axiosIns from "../../utils/axiosInstance";
-import "./messages.css";
+import socket from "../../Utils/Socket";
+import axiosIns from "../../Utils/AxiosInstance";
+import "./Messages.css";
 
 export default function Messages() {
   const navigate = useNavigate();

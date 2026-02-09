@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import "./followRequests.css";
-import { useAuth } from "../../../context/authContext";
-import axiosIns from "../../../utils/axiosInstance";
+import "./FollowRequests.css";
+import { useAuth } from "../../../Context/AuthContext";
+import axiosIns from "../../../Utils/AxiosInstance";
 
 const FollowRequests = () => {
   const { user, setUser } = useAuth();

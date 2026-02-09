@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Feeds from "../../Components/feeds/feeds";
-import CreatePost from "../../Components/createPost/createPost";
-import HomeLayout from "../homeLayout/homeLayout";
-import "./home.css";
+import Feeds from "../../Components/Feeds/Feeds";
+import CreatePost from "../../Components/CreatePost/CreatePost";
+import HomeLayout from "../HomeLayout/HomeLayout";
+import "./Home.css";
 
 export default function Home() {
   const [refresh, setRefresh] = useState(false);

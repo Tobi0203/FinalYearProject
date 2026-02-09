@@ -1,20 +1,20 @@
 import './App.css';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { SignIn } from './pages/signIn/signIn';
-import { SignUp } from './pages/signup/signUp';
 import { BrowserRouter, Routes, Route, } from "react-router-dom"
-import ForgetPassword from './pages/forgetPassword/forgetPassword';
-import { PasswordReset } from './pages/passwordReset/passwordReset';
-import Landing from './pages/landing/landing';
-import PublicRoute from './routes/publicRoute';
-import PrivateRoute from './routes/privateRoute';
-import Home from './pages/Home/home';
-import Profile from './pages/profile/profile';
-import Saved from './pages/saved/saved';
-import Liked from './pages/liked/liked';
-import Messages from "./pages/messages/messages";
-import SinglePost from "./pages/post/singlePost";
+import { SignIn } from './Pages/SignIn/SignIn';
+import { SignUp } from './Pages/Signup/SignUp';
+import ForgetPassword from './Pages/ForgetPassword/ForgetPassword';
+import { PasswordReset } from './Pages/PasswordReset/PasswordReset';
+import Landing from './Pages/Landing/Landing';
+import PublicRoute from './Routes/PublicRoute';
+import PrivateRoute from './Routes/PrivateRoute';
+import Home from './Pages/Home/Home';
+import Profile from './Pages/Profile/Profile';
+import Saved from './Pages/Saved/Saved';
+import Liked from './Pages/Liked/Liked';
+import Messages from "./Pages/Messages/Messages";
+import SinglePost from "./Pages/Post/SinglePost";
 
 function App() {
   return (

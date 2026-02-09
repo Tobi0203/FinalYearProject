@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import socket from "../utils/socket";
+import socket from "../Utils/Socket";
 
 const OnlineStatusContext = createContext();
 

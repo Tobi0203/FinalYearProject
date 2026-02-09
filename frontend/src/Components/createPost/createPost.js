@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import axiosIns from "../../utils/axiosInstance";
-import "./createPost.css";
+import axiosIns from "../../Utils/AxiosInstance";
+import "./CreatePost.css";
 import { toast } from "react-toastify";
 
 const CreatePost = ({
