@@ -4,7 +4,7 @@ const onlineUsers = require("./onlineUsers");
 const initSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: "https://final-year-project-ten-mauve.vercel.app/",
       credentials: true,
     },
   });
