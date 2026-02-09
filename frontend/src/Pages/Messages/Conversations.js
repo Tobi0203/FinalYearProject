@@ -28,7 +28,7 @@ export default function Conversations({ setCurrentChat, autoOpenConversationId }
     if (convo) {
       setCurrentChat(convo);
     }
-  }, [autoOpenConversationId, conversations]);
+  }, [autoOpenConversationId, conversations,setCurrentChat]);
 
   /* ================= REMOVE CONVO WHEN BLOCKED ================= */
   useEffect(() => {

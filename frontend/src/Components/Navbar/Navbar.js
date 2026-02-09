@@ -7,7 +7,7 @@ import { useNotifications } from "../../Context/NotificationContext";
 import { useOnlineStatus } from "../../Context/OnlineStatusContext";
 import SearchBar from "../SearchBar/SearchBar";
 
-import axiosIns from "../../Utils/AxiosInstance";
+// import axiosIns from "../../Utils/AxiosInstance";
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -51,47 +51,47 @@ const Navbar = () => {
             document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    /* ================= Search ================= */
-    const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState([]);
-    const [showSearch, setShowSearch] = useState(false);
-    const searchRef = useRef(null);
+    // /* ================= Search ================= */
+    // const [searchQuery, setSearchQuery] = useState("");
+    // const [searchResults, setSearchResults] = useState([]);
+    // const [showSearch, setShowSearch] = useState(false);
+    // const searchRef = useRef(null);
 
-    useEffect(() => {
-        if (!searchQuery.trim()) {
-            setSearchResults([]);
-            setShowSearch(false);
-            return;
-        }
+    // useEffect(() => {
+    //     if (!searchQuery.trim()) {
+    //         setSearchResults([]);
+    //         setShowSearch(false);
+    //         return;
+    //     }
 
-        const delay = setTimeout(async () => {
-            try {
-                const res = await axiosIns.get(
-                    `/users/searchUsers?q=${searchQuery}`
-                );
-                if (res.data.success) {
-                    setSearchResults(res.data.users);
-                    setShowSearch(true);
-                }
-            } catch (error) {
-                console.error("Search error", error);
-            }
-        }, 400);
+    //     const delay = setTimeout(async () => {
+    //         try {
+    //             const res = await axiosIns.get(
+    //                 `/users/searchUsers?q=${searchQuery}`
+    //             );
+    //             if (res.data.success) {
+    //                 setSearchResults(res.data.users);
+    //                 setShowSearch(true);
+    //             }
+    //         } catch (error) {
+    //             console.error("Search error", error);
+    //         }
+    //     }, 400);
 
-        return () => clearTimeout(delay);
-    }, [searchQuery]);
+    //     return () => clearTimeout(delay);
+    // }, [searchQuery]);
 
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (searchRef.current && !searchRef.current.contains(e.target)) {
-                setShowSearch(false);
-            }
-        };
+    // useEffect(() => {
+    //     const handleClickOutside = (e) => {
+    //         if (searchRef.current && !searchRef.current.contains(e.target)) {
+    //             setShowSearch(false);
+    //         }
+    //     };
 
-        document.addEventListener("mousedown", handleClickOutside);
-        return () =>
-            document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+    //     document.addEventListener("mousedown", handleClickOutside);
+    //     return () =>
+    //         document.removeEventListener("mousedown", handleClickOutside);
+    // }, []);
 
     return (
         <nav className="navbar">
