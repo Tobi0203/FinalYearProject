@@ -24,7 +24,7 @@ app.set("io", io);
 app.use(
     cors({
         origin: [
-            "http://localhost:3000",
+            // "http://localhost:3000",
             process.env.CLIENT_URL, // Vercel frontend
         ],
         credentials: true,
