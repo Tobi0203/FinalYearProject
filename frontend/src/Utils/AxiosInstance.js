@@ -1,6 +1,6 @@
 import axios from "axios"
 const axiosIns=axios.create({
-    baseURL:"http://localhost:5000",
+    baseURL:"https://final-year-project-ten-mauve.vercel.app/",
     // headers:{
     //     "Content-Type":"application/json"
     // },
