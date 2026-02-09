@@ -1,49 +1,35 @@
 import { useEffect, useState } from "react";
 import axiosIns from "../../utils/axiosInstance";
 import Feeds from "../../Components/feeds/feeds";
-import "./saved.css"
+import HomeLayout from "../homeLayout/homeLayout";
 
-const Saved = () => {
+export default function Saved() {
   const [savedPosts, setSavedPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const handleUnsave = (postId) => {
-    setSavedPosts((prev) =>
-      prev.filter((post) => post._id !== postId)
-    );
-  };
-
   useEffect(() => {
-    const fetchSavedPosts = async () => {
-      try {
-        const res = await axiosIns.get("/posts/savedPosts");
-        if (res.data.success) {
-          setSavedPosts(res.data.posts);
-        }
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
+    const fetchSaved = async () => {
+      const res = await axiosIns.get("/posts/savedPosts");
+      setSavedPosts(res.data.posts || []);
+      setLoading(false);
     };
-
-    fetchSavedPosts();
+    fetchSaved();
   }, []);
 
-  if (loading) return <p>Loading saved posts...</p>;
-
   return (
-    <div className="savedCont">
-      <div className="savedMain">
-        <h2>Saved</h2>
-        {savedPosts.length > 0 ? (
-          <Feeds externalPosts={savedPosts} onUnsave={handleUnsave} />
-        ) : (
-          <p>No saved posts yet</p>
-        )}
-      </div>
-    </div>
+    <HomeLayout>
+      {loading ? (
+        <p className="emptyFeed">Loading...</p>
+      ) : savedPosts.length === 0 ? (
+        <p className="emptyFeed">No saved posts</p>
+      ) : (
+        <Feeds
+          externalPosts={savedPosts}
+          onUnsave={(postId) =>
+            setSavedPosts(prev => prev.filter(p => p._id !== postId))
+          }
+        />
+      )}
+    </HomeLayout>
   );
-};
-
-export default Saved;
+}
