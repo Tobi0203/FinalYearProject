@@ -1,7 +1,7 @@
 const Notifications = require("../models/notifications");
 const Posts = require("../models/posts");
 const Users = require("../models/users");
-const { post } = require("../routes/postRoutes");
+// const { post } = require("../routes/postRoutes");
 const onlineUsers = require("../socket/onlineUsers")
 const cloudinary = require("../utils/cloudinary");
 
