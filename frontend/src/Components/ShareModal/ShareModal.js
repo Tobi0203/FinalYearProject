@@ -39,24 +39,33 @@ export default function ShareModal({ post, onClose }) {
             <div className="share-modal">
                 <h3>Send post</h3>
 
-                {conversations.map((c) => {
-                    const otherUser = c.members?.find(
-                        (m) => m._id !== user._id
-                    );
+                {conversations.length === 0 ? (
+                    <p className="no-conversations">
+                        No conversations to send
+                    </p>
+                ) : (
+                    conversations.map((c) => {
+                        const otherUser = c.members?.find(
+                            (m) => m._id !== user._id
+                        );
 
-                    if (!otherUser) return null;
+                        if (!otherUser) return null;
 
-                    return (
-                        <div
-                            key={c._id}
-                            className="share-user"
-                            onClick={() => handleSend(c._id)}
-                        >
-                            <img src={otherUser.profilePicture || "/assets/images/avatar.webp"} alt="" />
-                            <span>{otherUser.username}</span>
-                        </div>
-                    );
-                })}
+                        return (
+                            <div
+                                key={c._id}
+                                className="share-user"
+                                onClick={() => handleSend(c._id)}
+                            >
+                                <img
+                                    src={otherUser.profilePicture || "/assets/images/avatar.webp"}
+                                    alt=""
+                                />
+                                <span>{otherUser.username}</span>
+                            </div>
+                        );
+                    })
+                )}
 
                 <button className="cancel-btn" onClick={onClose}>
                     Cancel
@@ -64,4 +73,5 @@ export default function ShareModal({ post, onClose }) {
             </div>
         </div>
     );
+
 }

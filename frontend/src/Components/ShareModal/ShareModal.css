@@ -41,7 +41,7 @@
 /* ================================
    Users List Container
 ================================ */
-.share-modal > div {
+.share-modal>div {
   flex: 1;
   overflow-y: auto;
 }
@@ -111,15 +111,25 @@
   background: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
 }
+
 .share-modal {
   animation: popIn 0.2s ease;
 }
+
+.no-conversations {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+  padding: 20px 0;
+}
+
 
 @keyframes popIn {
   from {
     transform: scale(0.95);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
