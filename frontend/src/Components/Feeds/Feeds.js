@@ -314,6 +314,15 @@ const Feeds = ({ refresh, onPostDeleted, externalPosts, onUnsave, onUnlike }) =>
 
   if (loading) return <p>Loading feed...</p>;
 
+  if (!loading && posts.length === 0) {
+    return (
+      <div className="feed empty-feed">
+        <p>No posts yet</p>
+        <span>Follow users or create your first post</span>
+      </div>
+    );
+  }
+
   return (
     <div className="feed">
       {editingPost && (

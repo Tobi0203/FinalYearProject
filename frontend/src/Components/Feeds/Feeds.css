@@ -239,3 +239,23 @@
 .share-icon:hover {
   transform: scale(1.1);
 }
+.empty-feed {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.empty-feed p {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.empty-feed span {
+  font-size: 0.9rem;
+  margin-top: 6px;
+  opacity: 0.8;
+}
