@@ -32,7 +32,7 @@ const CreatePost = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log("hello")
     if (!caption && files.length === 0 && !existingMedia) {
       return toast.error("Post cannot be empty");
     }
@@ -54,15 +54,15 @@ const CreatePost = ({
       const res =
         mode === "create"
           ? await axiosIns.post("/posts/createPost", formData, {
-              headers: { "Content-Type": "multipart/form-data" },
-            })
+            headers: { "Content-Type": "multipart/form-data" },
+          })
           : await axiosIns.put(
-              `/posts/editPost/${post._id}`,
-              formData,
-              {
-                headers: { "Content-Type": "multipart/form-data" },
-              }
-            );
+            `/posts/editPost/${post._id}`,
+            formData,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            }
+          );
 
       if (res.data.success) {
         toast.success(
@@ -150,8 +150,8 @@ const CreatePost = ({
                 ? "Posting..."
                 : "Saving..."
               : mode === "create"
-              ? "Post"
-              : "Save"}
+                ? "Post"
+                : "Save"}
           </button>
         </div>
       </div>

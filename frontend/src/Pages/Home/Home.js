@@ -9,7 +9,7 @@ export default function Home() {
   const [showCreate, setShowCreate] = useState(false);
 
   return (
-    <HomeLayout>
+    <HomeLayout openCreatePost={() => setShowCreate(true)}>
       {showCreate && (
         <CreatePost
           onClose={() => setShowCreate(false)}
